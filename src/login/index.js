@@ -1,5 +1,4 @@
 import app from '../app.js'
-
 import connection from '../config/mysql/index.js'
 
 import { MapTree } from '../utils/index.js'
@@ -31,8 +30,9 @@ app.post('/node/login', function (req, res) {
 
 // 查询路由数据 
 app.post('/node/FetchRouteList', function (req, res) {
+  const roles = req.headers.authorization.slice(-1) == 'X' ? '01' : '02'
   connection.query(
-    'SELECT * FROM route_menu',
+    `SELECT * FROM route_menu WHERE roles LIKE '%${roles}%'`,
     (err, data) => {
       if (data) {
         const newList = MapTree(data)

@@ -1,35 +1,45 @@
-export const MapTree = (menuList, parent_id = null) => {
-    const idMap = new Map();
-    const tree = [];
+export const MapTree = (menuList) => {
+  const tree = [];
+  const idMap = new Map();
 
-    for (const node of menuList) {
-        const { id, parent_id } = node;
-        node.children = [];
-        idMap.set(id, node);
+  for (const node of menuList) {
+    const { id, parent_id, roles, name, path, component, ...meta } = node;
+    const children = [];
+    const newNode = { name, path, meta, children };
+    if (component) {
+      newNode.component = component;
     }
-
-    for (const node of idMap.values()) {
-        const parent = idMap.get(node.parent_id);
-
-        if (parent) {
-            parent.children.push(node);
-        } else {
-            tree.push(node);
-        }
+    if (menuList.some(item => item.parent_id === id)) {
+      newNode.children = children;
+    } else {
+      // 删除 children 属性
+      delete newNode.children;
     }
+    idMap.set(id, newNode);
+  }
 
-    return tree;
+  for (const [id, node] of idMap) {
+    const parent = idMap.get(menuList.find(item => item.id === id)?.parent_id);
+    if (parent) {
+      parent.children.push(node);
+    } else {
+      tree.push(node);
+    }
+  }
 
-    // const tree = [];
-    // for (let i = 0; i < menuList.length; i++) {
-    //   if (menuList[i].parent_id === parent_id) {
-    //     const children = setDeptList(menuList, menuList[i].id);
+  return tree;
 
-    //     if (children.length) {
-    //       menuList[i].children = children;
-    //     }
-    //     tree.push(menuList[i]);
-    //   }
-    // }
-    // return tree;
+  //   // const tree = [];
+  //   // for (let i = 0; i < menuList.length; i++) {
+  //   //   if (menuList[i].parent_id === parent_id) {
+  //   //     const children = setDeptList(menuList, menuList[i].id);
+
+  //   //     if (children.length) {
+  //   //       menuList[i].children = children;
+  //   //     }
+  //   //     tree.push(menuList[i]);
+  //   //   }
+  //   // }
+  //   // return tree;
 }
+

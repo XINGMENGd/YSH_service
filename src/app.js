@@ -2,8 +2,6 @@ import bodyParse from 'body-parser';
 import cors from 'cors';
 import compression from 'compression';
 import express from 'express';
-import connection from './config/mysql/index.js'
-import { MapTree } from './utils/index.js'
 
 const app = express()
 // 引入跨域插件
