@@ -1,9 +1,11 @@
-import app from '../app.js'
-import connection from '../config/mysql/index.js'
+import express from 'express'
+import connection from '../../config/mysql/index.js'
+import { MapTree } from '../../utils/index.js'
 
-import { MapTree } from '../utils/index.js'
+const router = express.Router()
+
 // 用户登录
-app.post('/node/login', function (req, res) {
+router.post('/login', (req, res) => {
   let response = { code: 0 }
   connection.query(
     'select * from users',
@@ -29,7 +31,7 @@ app.post('/node/login', function (req, res) {
 })
 
 // 查询路由数据 
-app.post('/node/FetchRouteList', function (req, res) {
+router.post('/FetchRouteList', (req, res) => {
   const roles = req.headers.authorization.slice(-1) == 'X' ? '01' : '02'
   connection.query(
     `SELECT * FROM route_menu WHERE roles LIKE '%${roles}%'`,
@@ -43,4 +45,10 @@ app.post('/node/FetchRouteList', function (req, res) {
     })
 })
 
-export default app
+router.post('/tet', (req, res) => {
+  res.json({
+    message: '13'
+  })
+})
+
+export default router
