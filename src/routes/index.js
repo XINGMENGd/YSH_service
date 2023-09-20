@@ -1,6 +1,6 @@
 import express from 'express';
-import loginRoutes from './login/index.js';
-import uploadRoutes from './upload/index.js';
+import loginRoutes from './authRoutes/index.js';
+import uploadRoutes from './uploadRoutes/index.js';
 
 const router = express.Router();
 

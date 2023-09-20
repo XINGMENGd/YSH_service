@@ -12,7 +12,7 @@ const app = express()
 app.use(cors()); // 配置跨域
 app.use(express.json()); // 配置解析 JSON 数据
 app.use(express.urlencoded({ extended: true })); // 配置解析 URL 编码表单数据
-// app.use(express.static('img'))； //将文件部署到服务器
+// app.use(express.static()) //将文件部署到服务器
 app.use(tokenAuth); // 配置token验证
 
 app.use('/api', apiRoutes)
