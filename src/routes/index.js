@@ -1,5 +1,5 @@
 import express from 'express';
-import loginRoutes from './login/index.js';
+import loginRoutes from './auth/index.js';
 import uploadRoutes from './upload/index.js';
 
 const router = express.Router();

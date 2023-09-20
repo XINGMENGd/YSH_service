@@ -1,17 +1,15 @@
 import multer from "multer";
 import fs from "fs";
 
-// 封装处理路径函数
-// 1. 打开或创建一个名字叫folder文件夹
+// 打开或创建一个名字叫folder文件夹
 let createFolder = function (folder) {
   try {
     fs.accessSync(folder); // 打开文件夹
   } catch (e) {
     fs.mkdirSync(folder); // 创建文件夹
-    fs.accessSync(folder); // 打开文件夹
   }
 };
-let uploadFolder = 'uploads'; // 设定存储文件夹为当前目录下的 /upload 文件夹
+let uploadFolder = 'uploads'; // 设定存储文件夹为根目录下的 upload 文件夹
 createFolder(uploadFolder);
 
 // 3. 设置 multer 的配置对象
