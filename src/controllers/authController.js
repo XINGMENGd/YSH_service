@@ -1,4 +1,4 @@
-import { verifyLogin, verifyRoles } from '../models/auth.js';
+import { verifyLogin, verifyRoles } from '../models/authModel.js';
 import { MapTree } from '../utils/index.js'
 
 export const loginController = (req, res) => {
