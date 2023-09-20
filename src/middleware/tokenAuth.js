@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 const whitelist = ['/api/login', '/api/upload'];
 export default function tokenAuth(req, res, next) {
   // 如果请求路径在白名单中，则直接通过，无需校验 token
-  if (whitelist.includes(req.path)) {
+  if (whitelist.includes(req.path) || req.path.startsWith('/uploads')) {
     return next();
   }
   // 在这里可以编写你的 token 校验逻辑

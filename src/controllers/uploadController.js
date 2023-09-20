@@ -1,7 +1,7 @@
 import multerConfig from '../utils/multerConfig.js'
 
 // 上传到服务器地址
-const BaseURL = 'http://localhost:3001'
+const BaseURL = 'http://localhost:8003'
 // 上传到服务器的目录
 const imgPath = '/public/'
 
