@@ -1,7 +1,9 @@
 import connection from '../config/mysql/index.js'
 
 // 验证用户登录
-export const verifyLogin = (username, password, callback) => {
+export const verifyLogin = (params, callback) => {
+  const { username, password } = params;
+
   connection.query(
     `SELECT * FROM users WHERE username = '${username}' AND password = ${password}`,
     (error, results) => {

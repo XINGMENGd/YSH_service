@@ -6,7 +6,7 @@ const BaseURL = 'http://localhost:8003'
 const imgPath = '/public/'
 
 // 用户的逻辑控制器
-export const UserController = async (req, res) => {
+export const uploadController = async (req, res) => {
   multerConfig.single('file')(req, res, function (err) {
     if (err) {
       // 传递的图片格式错误或者超出文件限制大小，响应错误信息
