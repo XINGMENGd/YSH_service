@@ -1,4 +1,5 @@
 import connection from '../config/mysql/index.js'
+import createdToken from '../utils/createdToken.js'
 
 // 验证用户登录
 export const verifyLogin = (params, callback) => {
@@ -10,16 +11,29 @@ export const verifyLogin = (params, callback) => {
       if (error) {
         return callback(error);
       }
-
-      callback(null, results[0]);
+      // 验证通过，生成 Token
+      results.length !== 0 ? createdToken(results[0], '10d', (error, data) => {
+        if (error) {
+          console.log('error:', error);
+        }
+        results[0].token = data.token
+        results[0].expires_at = data.expires_at
+        callback(null, results[0]);
+      }) : callback(null)
     }
   );
 };
 
 // 验证用户权限返回路由
-export const verifyRoles = (roles, callback) => {
+export const verifyRoles = (token, callback) => {
   connection.query(
-    `SELECT * FROM route_menu WHERE roles LIKE '%${roles}%'`,
+    `SELECT r.* 
+    FROM route_menu r
+    JOIN (
+      SELECT roles
+      FROM auth_tokens
+      WHERE token = '${token}'
+    ) a ON r.roles LIKE CONCAT('%', a.roles, '%');`,
     (error, results) => {
       if (error) {
         return callback(error);

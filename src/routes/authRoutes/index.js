@@ -7,6 +7,6 @@ const router = express.Router()
 router.post('/login', loginController)
 
 // 查询路由数据 
-router.post('/FetchRouteList', fetchRouteController)
+router.get('/FetchRouteList', fetchRouteController)
 
 export default router

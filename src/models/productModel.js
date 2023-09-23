@@ -24,9 +24,9 @@ export const createProduct = (params, callback) => {
 
   connection.query(
     `INSERT INTO product_info
-    ( NAME , description , price , stock , category , STATUS , image , sellerId , created_at )
+    ( NAME, description, price, stock, category, STATUS, image, sellerId, created_at)
       VALUES
-    ( '${name}','${description}',${price},${stock},'${category}','${status}','${image}',${sellerId},'${created_at}' )`,
+    ('${name}', '${description}', ${price}, ${stock}, '${category}', '${status}', '${image}', ${sellerId}, '${created_at}')`,
     (error, results) => {
       if (error) {
         return callback(error);
