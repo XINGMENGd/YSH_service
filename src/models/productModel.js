@@ -20,13 +20,31 @@ export const fetchProduct = (params, callback) => {
 
 // 添加商品
 export const createProduct = (params, callback) => {
-  const { name, description, price, stock, category, status, image, sellerId, created_at } = params
-
+  const { name, description, price, stock, category, status, images: imageArray, sellerId, created_at } = params
   connection.query(
     `INSERT INTO product_info
-    ( NAME, description, price, stock, category, STATUS, image, sellerId, created_at)
-      VALUES
-    ('${name}', '${description}', ${price}, ${stock}, '${category}', '${status}', '${image}', ${sellerId}, '${created_at}')`,
+  ( NAME, description, price, stock, category, STATUS, imageArray, sellerId, created_at)
+    VALUES
+  ('${name}', '${description}', ${price}, ${stock}, '${category}', '${status}', '${imageArray}', ${sellerId}, '${created_at}')`,
+    (error, results) => {
+      if (error) {
+        return callback(error);
+      }
+
+      callback(null, results);
+    }
+  );
+};
+
+// 修改商品信息
+export const updateProduct = (params, callback) => {
+  const { id, name, description, price, stock, category, status, images: imageArray, updated_at } = params
+
+  connection.query(
+    `UPDATE product_info SET
+     price = ${price}, NAME = '${name}', description = '${description}', stock = ${stock}, category = ${category}, 
+     updated_at = '${updated_at}', imageArray = '${imageArray}', STATUS = ${status}
+     WHERE id = ${id};`,
     (error, results) => {
       if (error) {
         return callback(error);

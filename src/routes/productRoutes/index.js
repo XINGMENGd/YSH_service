@@ -1,12 +1,10 @@
 import express from 'express'
-import { fetchProductController, createProductController } from '../../controllers/productController.js';
+import { fetchProductController, createProductController, updateProductController } from '../../controllers/productController.js';
 
 const router = express.Router()
 
-// 新增商品 
-router.get('/fetchProduct', fetchProductController)
-
-// 新增商品 
-router.post('/createProduct', createProductController)
+router.get('/fetchProduct', fetchProductController) // 新增商品 
+router.post('/createProduct', createProductController) // 新增商品 
+router.post('/updateProduct', updateProductController) // 修改商品
 
 export default router

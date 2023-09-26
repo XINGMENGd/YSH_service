@@ -16,7 +16,7 @@ app.use(express.urlencoded({ extended: true })); // 配置解析 URL 编码表�
 app.use(tokenAuth); // 配置token验证
 
 // 开放 /uploads 地址访问本地uploads文件夹
-app.use('/uploads', express.static(join(dirname(fileURLToPath(import.meta.url)), '../uploads'))) // 静态文件夹的相对路径
+app.use('/uploads/images', express.static(join(dirname(fileURLToPath(import.meta.url)), '../uploads/images'))) // 静态文件夹的相对路径
 app.use('/api', apiRoutes) // 配置路由接口
 
 

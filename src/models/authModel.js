@@ -12,7 +12,7 @@ export const verifyLogin = (params, callback) => {
         return callback(error);
       }
       // 验证通过，生成 Token
-      results.length !== 0 ? createdToken(results[0], '10d', (error, data) => {
+      results.length !== 0 ? createdToken(results[0], '1d', (error, data) => {
         if (error) {
           console.log('error:', error);
         }
