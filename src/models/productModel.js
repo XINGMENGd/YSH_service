@@ -1,7 +1,7 @@
 import connection from '../config/mysql/index.js'
 
 // 查询商品列表
-export const fetchProduct = (params, callback) => {
+export const getProductList = (params, callback) => {
   const page = parseInt(params.page) || 1; // 默认为第一页
   const pageSize = parseInt(params.pageSize) || 10; // 默认每页显示 10 条记录
   const offset = (page - 1) * pageSize; // 计算 offset
@@ -18,9 +18,38 @@ export const fetchProduct = (params, callback) => {
   );
 };
 
+// 查询商品分类列表
+export const getProductCategoryList = (params, callback) => {
+  connection.query(
+    `SELECT * FROM product_category_list`,
+    (error, results) => {
+      if (error) {
+        return callback(error);
+      }
+
+      callback(null, results);
+    }
+  );
+};
+
+// 查询商品状态列表
+export const getProductStatusList = (params, callback) => {
+  connection.query(
+    `SELECT * FROM product_status_list`,
+    (error, results) => {
+      if (error) {
+        return callback(error);
+      }
+
+      callback(null, results);
+    }
+  );
+};
+
 // 添加商品
 export const createProduct = (params, callback) => {
   const { name, description, price, stock, category, status, images: imageArray, sellerId, created_at } = params
+  
   connection.query(
     `INSERT INTO product_info
   ( NAME, description, price, stock, category, STATUS, imageArray, sellerId, created_at)

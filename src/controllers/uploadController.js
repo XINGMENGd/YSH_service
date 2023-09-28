@@ -5,7 +5,6 @@ import { join, dirname } from 'path';
 import { BaseURL, imgPath } from '../config/index.js'
 import crypto from 'crypto'
 
-
 // 上传图片的逻辑控制器
 export const uploadController = async (req, res) => {
   multerConfig.single('file')(req, res, function (err) {

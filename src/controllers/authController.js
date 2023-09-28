@@ -1,6 +1,7 @@
 import { verifyLogin, verifyRoles } from '../models/authModel.js';
 import { MapTree } from '../utils/index.js'
 
+// 用户登录的逻辑控制器
 export const loginController = (req, res) => {
   let response = { code: 0, message: '', data: null }
 
@@ -23,6 +24,7 @@ export const loginController = (req, res) => {
   });
 };
 
+// 查询路由列表的逻辑控制器
 export const fetchRouteController = (req, res) => {
   let response = { code: 0, message: '', data: null }
 

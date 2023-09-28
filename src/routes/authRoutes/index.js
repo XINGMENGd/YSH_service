@@ -4,6 +4,6 @@ import { loginController, fetchRouteController } from '../../controllers/authCon
 const router = express.Router()
 
 router.post('/login', loginController) // 用户登录
-router.get('/FetchRouteList', fetchRouteController) // 查询路由数据 
+router.get('/FetchRouteList', fetchRouteController) // 查询路由列表
 
 export default router
