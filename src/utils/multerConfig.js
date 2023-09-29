@@ -1,16 +1,12 @@
 import multer from "multer";
 import fs from "fs";
+import crypto from 'crypto'
 
-// 打开或创建一个名字叫folder文件夹
-let createFolder = function (folder) {
-  try {
-    fs.accessSync(folder); // 打开文件夹
-  } catch (e) {
-    fs.mkdirSync(folder); // 创建文件夹
-  }
-};
-let uploadFolder = 'uploads'; // 设定存储文件夹为根目录下的 upload 文件夹
-createFolder(uploadFolder);
+let uploadFolder = 'uploads/images'; // 设定存储文件夹为根目录下的 upload 文件夹
+// 设置文件上传存储路径
+fs.mkdirSync(uploadFolder, {
+  recursive: true // recursive 使用递归创建目录，如果父目录不存在会先创建
+});
 
 // 3. 设置 multer 的配置对象
 const storage = multer.diskStorage({
@@ -27,7 +23,10 @@ const storage = multer.diskStorage({
     // 将图片名称分割伪数组，用于截取图片的后缀
     const fileFormat = file.originalname.split('.')
     // 自定义图片名称
-    cb(null, Date.now() + '.' + fileFormat[fileFormat.length - 1])
+    const extension = fileFormat[fileFormat.length - 1]; // 图片后缀
+    const hash = crypto.createHash('sha256').update(file.originalname).digest('hex'); // 对图片名进行hash转换
+    const newFileName = hash + '.' + extension;
+    cb(null, newFileName)
   }
 })
 
