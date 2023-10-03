@@ -4,7 +4,7 @@ import { secretKey } from '../config/index.js'
 
 // 白名单路径，即不需要校验 token 的路径
 // 将白名单数组声明在拦截器外部，它在服务器启动时只会初始化一次，然后在所有请求中共享相同的白名单数组实例。这可以提高性能，因为不需要重复创建和初始化白名单数组。
-const whitelist = ['/api/login'];
+const whitelist = ['/api/login', '/api/getProductList'];
 export default function tokenAuth(req, res, next) {
   // 如果请求路径在白名单中，则直接通过，无需校验 token
   if (whitelist.includes(req.path) || req.path.includes('/upload')) {

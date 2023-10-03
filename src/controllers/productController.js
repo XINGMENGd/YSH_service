@@ -14,7 +14,10 @@ export const getProductListController = (req, res) => {
         item.imageArray ? item.imageArray = item.imageArray.split(',').map(filename => BaseURL + imgPath + filename) : item.imageArray = []
         return item
       })
-      response.code = 200, response.message = '获取成功', response.data = data
+      response.code = 200, response.message = '获取成功', response.data = {
+        list: data,
+        total: data[0]?.total_rows || null
+      }
       res.json(response);
     } else {
       response.code = 100, response.message = 'error', response.data = error

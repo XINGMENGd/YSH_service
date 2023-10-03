@@ -12,10 +12,11 @@ fs.mkdirSync(uploadFolder, {
 const storage = multer.diskStorage({
   // 3.1 存储路径
   destination: function (req, file, cb) {
-    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/gif') {
+    console.log(file);
+    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/gif' || file.mimetype === 'image/webp') {
       cb(null, uploadFolder)
     } else {
-      cb({ error: '仅支持 jpg/png/gif 格式的图片！' })
+      cb({ code: 100, error: '仅支持 jpg/png/gif/webp 格式的图片！' })
     }
   },
   //  3.2 存储名称
