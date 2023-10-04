@@ -1,17 +1,15 @@
 import jwt from 'jsonwebtoken';
 import connection from '../config/mysql/index.js'
 import { secretKey } from '../config/index.js'
+import moment from 'moment/moment.js';
 
-export default async function createdToken(userInfo, expires = '1d', callback) {
+export default async function createdToken(userInfo, expires = '24h', callback) {
   const { id: userId, jurisdiction: roles } = userInfo
   const token = jwt.sign({ userId }, secretKey, { expiresIn: expires });
-
   // 计算Token的过期时间
-  const expiresAt = new Date();
-  expiresAt.setHours(expiresAt.getHours() + 8) // 加8小时匹配中国北京时间
-  expiresAt.setDate(expiresAt.getDate() + Number(expires.slice(0, -1)))
-  const formattedDate = expiresAt.toISOString().slice(0, 19).replace('T', ' ');
-
+  const reg = /\b(\d+)([dhm])\b/
+  const [, number, hourly_basis] = expires.match(reg)
+  const formattedDate = moment().add(number, hourly_basis).format('YYYY-MM-DD HH:mm:ss')
   // 将Token、当前用户ID和过期时间存储到数据库
   connection.query(
     `INSERT INTO auth_tokens

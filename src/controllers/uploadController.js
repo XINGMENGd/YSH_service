@@ -1,8 +1,7 @@
 import multerConfig from '../utils/multerConfig.js'
 import fs from 'fs'
-import { fileURLToPath } from 'url';
-import { join, dirname } from 'path';
 import { BaseURL, imgPath } from '../config/index.js'
+import { relativePath } from '../utils/index.js'
 import crypto from 'crypto'
 
 // 上传图片的逻辑控制器
@@ -31,10 +30,10 @@ export const uploadController = async (req, res) => {
 
 // 删除图片的逻辑控制器
 export const removeImagesController = async (req, res) => {
-  const { deletedArray  } = req.body
-  const baseUrl = join(dirname(fileURLToPath(import.meta.url)), '../../uploads/images/')
+  const { deletedArray } = req.body
+  const baseUrl = relativePath('/uploads/images/')
   try {
-    deletedArray .forEach(item => {
+    deletedArray.forEach(item => {
       fs.unlinkSync(baseUrl + item)
     })
     res.json({

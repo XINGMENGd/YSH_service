@@ -4,8 +4,7 @@ import compression from 'compression';
 import { systemConfig } from './config/index.js';
 import apiRoutes from './routes/index.js';
 import { tokenAuth } from './middleware/index.js';
-import { fileURLToPath } from 'url';
-import { join, dirname } from 'path';
+import { relativePath } from './utils/index.js'
 
 const app = express()
 
@@ -16,7 +15,8 @@ app.use(express.urlencoded({ extended: true })); // 配置解析 URL 编码表�
 app.use(tokenAuth); // 配置token验证
 
 // 开放 /uploads 地址访问本地uploads文件夹
-app.use('/uploads/images', express.static(join(dirname(fileURLToPath(import.meta.url)), '../uploads/images'))) // 静态文件夹的相对路径
+// app.use('/uploads/images', express.static(join(dirname(fileURLToPath(import.meta.url)), '../uploads/images'))) // 静态文件夹的相对路径
+app.use('/uploads/images', express.static(relativePath('/uploads/images'))) // 静态文件夹的相对路径
 app.use('/api', apiRoutes) // 配置路由接口
 
 

@@ -1,3 +1,6 @@
+import { fileURLToPath } from 'url';
+import { join, dirname } from 'path';
+
 export const MapTree = (menuList) => {
   const tree = [];
   const idMap = new Map();
@@ -43,3 +46,8 @@ export const MapTree = (menuList) => {
   //   // return tree;
 }
 
+export const relativePath = (filePath) => {
+  const rootPath = dirname(dirname(dirname(fileURLToPath(import.meta.url))));
+  const srcPath = join(rootPath, '/', filePath);
+  return srcPath;
+};
