@@ -2,17 +2,17 @@ import connection from '../config/mysql/index.js'
 import createdToken from '../utils/createdToken.js'
 
 // 插入验证码
-export const insertVerifyCode = (params) => {
+export const insertVerifyEmailCode = (params) => {
   return new Promise((resolve, reject) => {
-    const { number: affiliation, send_mode, verify_code, created_at, expires_at } = params;
+    const { email: affiliation, verify_code, created_at, expires_at } = params;
     const sql = `
-      INSERT INTO verify_codes
-        (affiliation, send_mode, verify_code, created_at, expires_at)
+      INSERT INTO verify_codes_email
+        (affiliation, verify_code, created_at, expires_at)
       VALUES
-        (?, ?, ?, ?, ?)
+        (?, ?, ?, ?)
     `;
 
-    connection.query(sql, [affiliation, send_mode, verify_code, created_at, expires_at], (error, results) => {
+    connection.query(sql, [affiliation, verify_code, created_at, expires_at], (error, results) => {
       if (error) {
         return reject(error);
       }
@@ -21,30 +21,63 @@ export const insertVerifyCode = (params) => {
   })
 };
 
-// 注册新用户
-export const registerNewUser = (params) => {
+// 注册邮箱新用户
+export const registerEmailUser = (params) => {
   return new Promise((resolve, reject) => {
-    const { phone, email, password, verify_code } = params;
-    const sql = `
-      INSERT INTO frontend_users
-        (email, password)
-      SELECT ?, ? FROM dual
-        WHERE NOT EXISTS (
-      SELECT * FROM frontend_users WHERE email = ?
-        )
-    `;
+    const { email, password, verify_code } = params;
+    const sql = `SELECT * FROM frontend_users WHERE email = ? `;
 
-    connection.query(sql, [email, password, email], (error, results) => {
+    connection.query(sql, [email], (error, results) => {
       if (error) {
         return reject(error);
       }
-      if (results.affectedRows === 0) {
+      if (results.length > 0) {
         return reject('该邮箱已注册');
       } else {
-        resolve(results);
+        const verifyCodeSql = `
+          INSERT INTO frontend_users (email, password)
+          SELECT ?, ? FROM dual
+          WHERE EXISTS (
+            SELECT * FROM verify_codes_email
+            WHERE affiliation = ? AND verify_code = ? AND expires_at >= NOW()
+          )
+        `;
+        connection.query(verifyCodeSql, [email, password, email, verify_code], (error, results) => {
+          if (error) {
+            return reject(error);
+          }
+          if (results.affectedRows === 0) {
+            return reject('验证码错误或已过期');
+          } else {
+            resolve(results);
+          }
+        });
       }
-    })
-  })
+    });
+  });
+};
+
+export const updateUserInfo = (params) => {
+  return new Promise((resolve, reject) => {
+    const { id, frontend_id, ...updates } = params;
+    const updateStatements = Object.entries(updates).map(([key, value]) => {
+      return `${key} = '${value}'`;
+    });
+
+    if (updateStatements.length === 0) {
+      resolve();
+      return;
+    }
+
+    const sql = `UPDATE frontend_users SET ${updateStatements.join(', ')} WHERE id = ${id}`;
+
+    connection.query(sql, (error, results) => {
+      if (error) {
+        return reject(error);
+      }
+      resolve(results);
+    });
+  });
 };
 
 // 验证用户登录

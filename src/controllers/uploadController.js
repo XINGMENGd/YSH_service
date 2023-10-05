@@ -33,7 +33,7 @@ export const removeImagesController = async (req, res) => {
   const { deletedArray } = req.body
   const baseUrl = relativePath('/uploads/images/')
   try {
-    deletedArray.forEach(item => {
+    await deletedArray.forEach(item => {
       fs.unlinkSync(baseUrl + item)
     })
     res.json({

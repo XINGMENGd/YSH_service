@@ -46,8 +46,15 @@ export const MapTree = (menuList) => {
   //   // return tree;
 }
 
+// 匹配根路径
 export const relativePath = (filePath) => {
   const rootPath = dirname(dirname(dirname(fileURLToPath(import.meta.url))));
   const srcPath = join(rootPath, '/', filePath);
   return srcPath;
 };
+
+export const emailRegex = (email) => {
+  const reg = /^[a-z0-9._%-]+@[a-z0-9.-]*[a-z0-9]{1}\.[a-z]{2,4}$/;
+  const isValidEmail = reg.test(email);
+  return isValidEmail;
+}
