@@ -4,7 +4,7 @@ import { secretKey } from '../config/index.js'
 import moment from 'moment/moment.js';
 
 export default async function createdToken(userInfo, expires = '24h', callback) {
-  const { id: userId, jurisdiction: roles } = userInfo
+  const { id: userId, roles } = userInfo
   const token = jwt.sign({ userId }, secretKey, { expiresIn: expires });
   // 计算Token的过期时间
   const reg = /\b(\d+)([dhm])\b/

@@ -1,62 +1,34 @@
 import connection from '../config/mysql/index.js'
 import createdToken from '../utils/createdToken.js'
 
-// 插入验证码
-export const insertVerifyEmailCode = (params) => {
+// 注册新用户
+export const registerUser = (params) => {
   return new Promise((resolve, reject) => {
-    const { email: affiliation, verify_code, created_at, expires_at } = params;
+    const { email, password } = params;
     const sql = `
-      INSERT INTO verify_codes_email
-        (affiliation, verify_code, created_at, expires_at)
-      VALUES
-        (?, ?, ?, ?)
+      INSERT INTO frontend_users (email, password)
+        SELECT ?, ?
+        FROM DUAL
+      WHERE NOT EXISTS (
+        SELECT *
+        FROM frontend_users
+        WHERE email = ?
+      )
     `;
 
-    connection.query(sql, [affiliation, verify_code, created_at, expires_at], (error, results) => {
+    connection.query(sql, [email, password, email], (error, results) => {
       if (error) {
         return reject(error);
+      }
+      if (results.affectedRows === 0) {
+        return reject('该邮箱已注册');
       }
       resolve(results);
-    });
-  })
-};
-
-// 注册邮箱新用户
-export const registerEmailUser = (params) => {
-  return new Promise((resolve, reject) => {
-    const { email, password, verify_code } = params;
-    const sql = `SELECT * FROM frontend_users WHERE email = ? `;
-
-    connection.query(sql, [email], (error, results) => {
-      if (error) {
-        return reject(error);
-      }
-      if (results.length > 0) {
-        return reject('该邮箱已注册');
-      } else {
-        const verifyCodeSql = `
-          INSERT INTO frontend_users (email, password)
-          SELECT ?, ? FROM dual
-          WHERE EXISTS (
-            SELECT * FROM verify_codes_email
-            WHERE affiliation = ? AND verify_code = ? AND expires_at >= NOW()
-          )
-        `;
-        connection.query(verifyCodeSql, [email, password, email, verify_code], (error, results) => {
-          if (error) {
-            return reject(error);
-          }
-          if (results.affectedRows === 0) {
-            return reject('验证码错误或已过期');
-          } else {
-            resolve(results);
-          }
-        });
-      }
     });
   });
 };
 
+// 更新用户信息
 export const updateUserInfo = (params) => {
   return new Promise((resolve, reject) => {
     const { id, frontend_id, ...updates } = params;
@@ -109,15 +81,16 @@ export const verifyLogin = (params) => {
 };
 
 // 验证用户权限返回路由
-export const verifyRoles = (token) => {
+export const verifyRoles = () => {
   return new Promise((resolve, reject) => {
-    const sql = `
-      SELECT r.*  FROM route_menu r
-        JOIN 
-      (SELECT roles FROM auth_tokens WHERE token = '${token}' ) a
-        ON
-      r.roles LIKE CONCAT( '%', a.roles, '%');
-    `
+    // const sql = `
+    //   SELECT r.*  FROM route_menu r
+    //     JOIN 
+    //   (SELECT roles FROM auth_tokens WHERE token = '${token}' ) a
+    //     ON
+    //   r.roles LIKE CONCAT( '%', a.roles, '%');
+    // `
+    const sql = `SELECT * FROM route_menu`
 
     connection.query(sql, (error, results) => {
       if (error) {

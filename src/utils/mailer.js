@@ -7,10 +7,10 @@ import fs from 'fs'
 const transporter = nodemailer.createTransport(mailConfig)
 
 // 发送邮件
-export function sendVerifyCode(verify_code, email) {
+export function sendVerifyCode(email, verify_code) {
   return new Promise((resolve, reject) => {
     const url = relativePath('/src/views/emailTemplate.html')
-    
+
     fs.readFile(url, 'utf8', (error, content) => {
       if (error) {
         return reject(error)
