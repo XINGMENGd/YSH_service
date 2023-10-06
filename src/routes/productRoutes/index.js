@@ -1,12 +1,16 @@
 import express from 'express'
-import { getProductListController, getProductCategoryListController, getProductStatusListController, createProductController, updateProductController } from '../../controllers/productController.js';
+import * as productController from '../../controllers/productController.js';
 
 const router = express.Router()
 
-router.get('/getProductList', getProductListController) // 获取商品列表
-router.get('/getProductCategoryList', getProductCategoryListController) // 获取商品分类列表
-router.get('/getProductStatusList', getProductStatusListController) // 获取商品状态列表
-router.post('/createProduct', createProductController) // 新增商品 
-router.post('/updateProduct', updateProductController) // 修改商品信息
+const routesController = Object.keys(productController)
+for (const item of routesController) {
+  const routeName = item.replace('Controller', '');
+  if (productController[item].method == 'get') {
+    router.get(`/${routeName}`, productController[item].handler)
+  } else if (productController[item].method == 'post') {
+    router.post(`/${routeName}`, productController[item].handler)
+  }
+}
 
 export default router

@@ -83,13 +83,6 @@ export const verifyLogin = (params) => {
 // 验证用户权限返回路由
 export const verifyRoles = () => {
   return new Promise((resolve, reject) => {
-    // const sql = `
-    //   SELECT r.*  FROM route_menu r
-    //     JOIN 
-    //   (SELECT roles FROM auth_tokens WHERE token = '${token}' ) a
-    //     ON
-    //   r.roles LIKE CONCAT( '%', a.roles, '%');
-    // `
     const sql = `SELECT * FROM route_menu`
 
     connection.query(sql, (error, results) => {
