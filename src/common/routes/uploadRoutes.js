@@ -1,5 +1,5 @@
 import express from 'express'
-import { uploadController, removeImagesController } from '../../controllers/uploadController.js'
+import { uploadController, removeImagesController } from '../controllers/uploadController.js'
 
 const router = express.Router()
 

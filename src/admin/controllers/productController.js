@@ -1,5 +1,5 @@
 import { getProductList, getProductStatusList, getProductCategoryList, createProduct, updateProduct } from '../models/productModel.js';
-import { BaseURL, imgPath, response } from '../config/index.js'
+import { BaseURL, imgPath, response } from '../../config/index.js'
 import moment from 'moment/moment.js';
 
 // 查询商品列表的逻辑控制器

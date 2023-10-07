@@ -1,0 +1,1 @@
+import connection from '../config/mysql/index.js'

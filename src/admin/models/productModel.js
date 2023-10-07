@@ -1,4 +1,4 @@
-import connection from '../config/mysql/index.js'
+import connection from '../../config/mysql.js'
 
 // 查询商品列表
 export const getProductList = (params) => {

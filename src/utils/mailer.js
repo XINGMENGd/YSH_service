@@ -1,15 +1,11 @@
-import nodemailer from 'nodemailer'
-import { mailConfig } from '../config/index.js'
+import transporter from '../config/mail.js'
 import { relativePath } from '../utils/index.js'
 import fs from 'fs'
-
-// 创建一个SMTP客户端对象
-const transporter = nodemailer.createTransport(mailConfig)
 
 // 发送邮件
 export function sendVerifyCode(email, verify_code) {
   return new Promise((resolve, reject) => {
-    const url = relativePath('/src/views/emailTemplate.html')
+    const url = relativePath('/src/frontend/views/emailTemplate.html')
 
     fs.readFile(url, 'utf8', (error, content) => {
       if (error) {

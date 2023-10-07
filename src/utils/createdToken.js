@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import connection from '../config/mysql/index.js'
+import connection from '../config/mysql.js'
 import { secretKey } from '../config/index.js'
 import moment from 'moment/moment.js';
 
@@ -12,7 +12,7 @@ export default async function createdToken(userInfo, expires = '24h', callback) 
   const formattedDate = moment().add(number, hourly_basis).format('YYYY-MM-DD HH:mm:ss')
   // 将Token、当前用户ID和过期时间存储到数据库
   connection.query(
-    `INSERT INTO auth_tokens
+    `INSERT INTO admin_auth_tokens
      ( token, user_id, expires_at, roles)
       VALUES
      ( '${token}', ${userId}, '${formattedDate}', '${roles}')`,

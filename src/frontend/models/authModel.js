@@ -1,5 +1,5 @@
-import connection from '../config/mysql/index.js'
-import createdToken from '../utils/createdToken.js'
+import connection from '../../config/mysql.js'
+import createdToken from '../../utils/createdToken.js'
 
 // 注册新用户
 export const registerUser = (params) => {

@@ -1,7 +1,7 @@
-import multerConfig from '../utils/multerConfig.js'
+import multerConfig from '../../utils/multerConfig.js'
 import fs from 'fs'
-import { BaseURL, imgPath } from '../config/index.js'
-import { relativePath } from '../utils/index.js'
+import { BaseURL, imgPath } from '../../config/index.js'
+import { relativePath } from '../../utils/index.js'
 import crypto from 'crypto'
 
 // 上传图片的逻辑控制器
