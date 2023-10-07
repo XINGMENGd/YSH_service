@@ -1,4 +1,4 @@
-import connection from '../../config/mysql.js'
+import connection from '../../utils/mysql.js'
 import createdToken from '../../utils/createdToken.js'
 
 // 验证用户登录
@@ -15,9 +15,8 @@ export const verifyLogin = (params) => {
         return reject(error);
       }
       // 验证通过，生成 Token
-      results.length !== 0 ? createdToken(results[0], '24h', (error, data) => {
+      results.length !== 0 ? createdToken(results[0], '1m', (error, data) => {
         if (error) {
-          console.log('error:', error);
           return reject(error)
         }
         results[0].token = data.token

@@ -1,5 +1,5 @@
-import { registerUser, updateUserInfo, verifyLogin, verifyRoles } from '../models/authModel.js';
-import { MapTree, emailRegex } from '../../utils/index.js'
+import { registerUser, updateUserInfo, verifyLogin } from '../models/authModel.js';
+import { emailRegex } from '../../utils/index.js'
 import { sendVerifyCode } from '../../utils/mailer.js'
 import redisClient from '../../utils/redis.js'
 import { response } from '../../config/index.js'
@@ -67,6 +67,22 @@ export const updateUserInfoController = {
     updateUserInfo(req.body)
       .then(data => {
         response.message = '更新成功'
+        res.json(response);
+      })
+      .catch(error => {
+        response.message = error
+        res.json(response);
+      })
+  }
+}
+
+// 用户登录的逻辑控制器      待写
+export const loginController = {
+  method: 'post',
+  handler: (req, res) => {
+    verifyLogin(req.body)
+      .then(data => {
+        response.message = '登录成功'
         res.json(response);
       })
       .catch(error => {

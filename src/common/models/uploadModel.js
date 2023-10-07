@@ -1,1 +1,1 @@
-import connection from '../config/mysql/index.js'
+import connection from '../utils/mysql.js'

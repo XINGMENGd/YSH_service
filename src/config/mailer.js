@@ -1,5 +1,3 @@
-import nodemailer from 'nodemailer'
-
 // 邮箱发送信息配置
 const mailConfig = {
   service: '163', // 类型163网易邮箱
@@ -11,7 +9,4 @@ const mailConfig = {
   }
 }
 
-// 创建一个SMTP客户端对象
-const transporter = nodemailer.createTransport(mailConfig)
-
-export default transporter
+export default mailConfig

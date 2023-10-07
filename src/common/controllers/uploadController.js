@@ -31,7 +31,7 @@ export const uploadController = async (req, res) => {
 // 删除图片的逻辑控制器
 export const removeImagesController = async (req, res) => {
   const { deletedArray } = req.body
-  const baseUrl = relativePath('/uploads/images/')
+  const baseUrl = relativePath(imgPath)
   try {
     await deletedArray.forEach(item => {
       fs.unlinkSync(baseUrl + item)

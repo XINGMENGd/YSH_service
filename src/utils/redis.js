@@ -9,7 +9,7 @@ redisClient.on('error', (error) => {
 });
 
 redisClient.on('connect', () => {
-  console.log('redis连接成功');
+  console.log('Redis连接成功');
 })
 
 redisClient.connect(6379, '127.0.0.1')

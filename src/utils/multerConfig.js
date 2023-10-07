@@ -1,10 +1,10 @@
 import multer from "multer";
 import fs from "fs";
 import crypto from 'crypto'
+import { imgPath } from "../config/index.js";
 
-let uploadFolder = 'uploads/images'; // 设定存储文件夹为根目录下的 upload 文件夹
 // 设置文件上传存储路径
-fs.mkdirSync(uploadFolder, {
+fs.mkdirSync(imgPath, {
   recursive: true // recursive 使用递归创建目录，如果父目录不存在会先创建
 });
 
@@ -12,9 +12,8 @@ fs.mkdirSync(uploadFolder, {
 const storage = multer.diskStorage({
   // 3.1 存储路径
   destination: function (req, file, cb) {
-    console.log(file);
     if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/gif' || file.mimetype === 'image/webp') {
-      cb(null, uploadFolder)
+      cb(null, imgPath)
     } else {
       cb({ code: 100, error: '仅支持 jpg/png/gif/webp 格式的图片！' })
     }

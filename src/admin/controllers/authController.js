@@ -2,6 +2,7 @@ import { verifyLogin, verifyRoles } from '../models/authModel.js';
 import { response } from '../../config/index.js'
 import { MapTree } from '../../utils/index.js'
 import redisClient from '../../utils/redis.js'
+import jwt from 'jsonwebtoken';
 
 // 用户登录的逻辑控制器
 export const loginController = {

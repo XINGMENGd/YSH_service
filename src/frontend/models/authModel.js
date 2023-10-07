@@ -1,4 +1,4 @@
-import connection from '../../config/mysql.js'
+import connection from '../../utils/mysql.js'
 import createdToken from '../../utils/createdToken.js'
 
 // 注册新用户
@@ -76,20 +76,6 @@ export const verifyLogin = (params) => {
         results[0].expires_at = data.expires_at
         resolve(results[0]);
       }) : reject(null) // 查询不到该用户(sql执行无误，但没有用户信息)
-    });
-  })
-};
-
-// 验证用户权限返回路由
-export const verifyRoles = () => {
-  return new Promise((resolve, reject) => {
-    const sql = `SELECT * FROM route_menu`
-
-    connection.query(sql, (error, results) => {
-      if (error) {
-        return reject(error);
-      }
-      resolve(results);
     });
   })
 };

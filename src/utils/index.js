@@ -1,6 +1,7 @@
 import { fileURLToPath } from 'url';
 import { join, dirname } from 'path';
 
+// 递归处理路由，将之处理成树状结构返回
 export const MapTree = (menuList) => {
   const tree = [];
   const idMap = new Map();
@@ -45,14 +46,13 @@ export const MapTree = (menuList) => {
   //   // }
   //   // return tree;
 }
-
 // 匹配根路径
 export const relativePath = (filePath) => {
   const rootPath = dirname(dirname(dirname(fileURLToPath(import.meta.url))));
-  const srcPath = join(rootPath, '/', filePath);
+  const srcPath = join(rootPath, filePath);
   return srcPath;
 };
-
+// 验证邮箱格式
 export const emailRegex = (email) => {
   const reg = /^[a-z0-9._%-]+@[a-z0-9.-]*[a-z0-9]{1}\.[a-z]{2,4}$/;
   const isValidEmail = reg.test(email);
