@@ -1,23 +1,22 @@
+import { response } from '../../config/index.js';
+import { MapTree } from '../../utils/index.js';
+import redisClient from '../../utils/redis.js';
 import { verifyLogin, verifyRoles } from '../models/authModel.js';
-import { response } from '../../config/index.js'
-import { MapTree } from '../../utils/index.js'
-import redisClient from '../../utils/redis.js'
-import jwt from 'jsonwebtoken';
 
 // 用户登录的逻辑控制器
 export const loginController = {
   method: 'post',
   handler: (req, res) => {
+    const { username, password } = req.body
+    if (!username || !password) {
+      response.message = '账号信息或密码不能为空'
+      return res.json(response)
+    }
     verifyLogin(req.body)
       .then(data => {
+        const { password, ..._data } = data
         response.message = '登录成功'
-        response.data = {
-          id: data.id,
-          token: data.token,
-          expires_at: data.expires_at,
-          username: data.username,
-          roles: data.roles
-        }
+        response.data = _data
         res.json(response);
       })
       .catch(error => {
@@ -32,7 +31,7 @@ export const getRoutesController = {
   method: 'post',
   handler: async (req, res) => {
     try {
-      const { roles } = req.body
+      const roles = req.headers['roles']
       // 读取redis缓存中的路由
       const hasRoutes = await redisClient.get('routes')
       if (!hasRoutes || hasRoutes === '') {

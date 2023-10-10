@@ -1,6 +1,6 @@
 import express from 'express';
-import { configureApp } from './middleware/index.js';
 import { systemConfig } from './config/index.js';
+import { configureApp } from './middleware/index.js';
 
 const app = express()
 

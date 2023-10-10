@@ -1,4 +1,4 @@
-import mysql from 'mysql'
+import mysql from 'mysql';
 import mysqlConfig from '../config/mysql.js';
 
 // 创建连接对象

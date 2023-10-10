@@ -1,5 +1,5 @@
+import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
-import { join, dirname } from 'path';
 
 // 递归处理路由，将之处理成树状结构返回
 export const MapTree = (menuList) => {
@@ -52,9 +52,15 @@ export const relativePath = (filePath) => {
   const srcPath = join(rootPath, filePath);
   return srcPath;
 };
-// 验证邮箱格式
+// 验证邮箱号码格式
 export const emailRegex = (email) => {
   const reg = /^[a-z0-9._%-]+@[a-z0-9.-]*[a-z0-9]{1}\.[a-z]{2,4}$/;
   const isValidEmail = reg.test(email);
   return isValidEmail;
+}
+// 验证手机号格式
+export const phoneNumberRegex = (phoneNumber) => {
+  const reg = /^[1-9]\d{9}$/;
+  const isValidPhoneNumber = reg.test(phoneNumber);
+  return isValidPhoneNumber;
 }

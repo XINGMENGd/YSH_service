@@ -1,4 +1,4 @@
-import redis from 'redis' // 引入 redis
+import redis from 'redis'; // 引入 redis
 
 // 创建客户端
 const redisClient = redis.createClient()

@@ -1,7 +1,7 @@
+import fs from 'fs'
 import nodemailer from 'nodemailer'
 import mailConfig from '../config/mailer.js'
 import { relativePath } from '../utils/index.js'
-import fs from 'fs'
 
 // 创建一个SMTP客户端对象
 const transporter = nodemailer.createTransport(mailConfig)

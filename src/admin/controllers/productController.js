@@ -1,6 +1,6 @@
-import { getProductList, getProductStatusList, getProductCategoryList, createProduct, updateProduct } from '../models/productModel.js';
-import { BaseURL, imgPath, response } from '../../config/index.js'
 import moment from 'moment/moment.js';
+import { BaseURL, imagePath, response, videoPath } from '../../config/index.js';
+import { createProduct, getProductCategoryList, getProductList, getProductStatusList, updateProduct } from '../models/productModel.js';
 
 // 查询商品列表的逻辑控制器
 export const getProductListController = {
@@ -11,7 +11,16 @@ export const getProductListController = {
         data = data.map(item => {
           item.created_at = moment(item.created_at).format('YYYY-MM-DD HH:mm:ss')
           item.updated_at ? item.updated_at = moment(item.updated_at).format('YYYY-MM-DD HH:mm:ss') : ''
-          item.imageArray ? item.imageArray = item.imageArray.split(',').map(filename => BaseURL + imgPath + filename) : item.imageArray = []
+          if (item.imageArray) {
+            const imageArray = JSON.parse(item.imageArray).map(file => {
+              file.fileName = `${BaseURL}${file.fileType.includes('image') ? imagePath : videoPath}${file.fileName}`
+              file.fileType = file.fileType
+              return file
+            })
+            item.imageArray = imageArray
+          } else {
+            item.imageArray = []
+          }
           return item
         })
         response.message = '获取成功'
@@ -22,6 +31,7 @@ export const getProductListController = {
         res.json(response);
       })
       .catch(error => {
+        console.log(error);
         response.message = '获取失败', response.data = error
         res.json(response);
       })

@@ -1,5 +1,5 @@
-import connection from '../../utils/mysql.js'
-import createdToken from '../../utils/createdToken.js'
+import createdToken from '../../utils/createdToken.js';
+import connection from '../../utils/mysql.js';
 
 // 注册新用户
 export const registerUser = (params) => {
@@ -28,39 +28,50 @@ export const registerUser = (params) => {
   });
 };
 
-// 更新用户信息
-export const updateUserInfo = (params) => {
+// 验证用户登录
+export const verifyLogin = (params) => {
   return new Promise((resolve, reject) => {
-    const { id, frontend_id, ...updates } = params;
-    const updateStatements = Object.entries(updates).map(([key, value]) => {
-      return `${key} = '${value}'`;
-    });
-
-    if (updateStatements.length === 0) {
-      resolve();
-      return;
+    const { loginId, password, verify_mode } = params;
+    let condition = "";
+    if (verify_mode == 'email') {
+      condition = `email = '${loginId}'`
+    } else {
+      condition = `username = '${loginId}'`;
     }
-
-    const sql = `UPDATE frontend_users SET ${updateStatements.join(', ')} WHERE id = ${id}`;
-
+    const sql = `
+      SELECT * FROM frontend_users 
+        WHERE
+      ${condition} AND password = ${password}
+    `
     connection.query(sql, (error, results) => {
       if (error) {
         return reject(error);
       }
-      resolve(results);
+      // 验证通过，生成 Token
+      results.length !== 0 ? createdToken(results[0], '24h', (error, data) => {
+        if (error) {
+          console.log('error:', error);
+          return reject(error)
+        }
+        results[0].token = data.token
+        results[0].expires_at = data.expires_at
+        resolve(results[0]);
+      }) : reject(null) // 查询不到该用户(sql执行无误，但没有用户信息)
     });
-  });
+  })
 };
 
-// 验证用户登录
-export const verifyLogin = (params) => {
+// 验证用户验证码登录
+export const verifyLoginCode = (params) => {
   return new Promise((resolve, reject) => {
-    const { username, password } = params;
-    const sql = `
-      SELECT * FROM admin_users 
-        WHERE
-      username = '${username}' AND password = ${password}
-    `
+    const { loginId, verify_mode } = params;
+    let condition = "";
+    if (verify_mode == 'email') {
+      condition = `email = '${loginId}'`
+    } else if (verify_mode == 'phone') {
+      condition = `phone_number = '${loginId}'`;
+    }
+    const sql = `SELECT * FROM frontend_users WHERE ${condition}`
 
     connection.query(sql, (error, results) => {
       if (error) {
@@ -79,3 +90,22 @@ export const verifyLogin = (params) => {
     });
   })
 };
+
+// 更新用户信息
+export const updateUserInfo = (params) => {
+  return new Promise((resolve, reject) => {
+    const { id, frontend_id, ...updates } = params;
+    const updateStatements = Object.entries(updates).map(([key, value]) => {
+      return `${key} = '${value}'`;
+    });
+    const sql = `UPDATE frontend_users SET ${updateStatements.join(', ')} WHERE id = ${id}`;
+
+    connection.query(sql, (error, results) => {
+      if (error) {
+        return reject(error);
+      }
+      resolve(results);
+    });
+  });
+};
+

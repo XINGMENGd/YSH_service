@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
-import { secretKey } from '../config/index.js'
 import moment from 'moment/moment.js';
+import { secretKey } from '../config/index.js';
 
 export default async function createdToken(userInfo, expires = '24h', callback) {
   const { id: userId, roles } = userInfo
