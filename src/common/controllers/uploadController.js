@@ -1,10 +1,13 @@
 import fs from 'fs';
 import multer from "multer";
-import { BaseURL, imagePath, response, tempPath, videoPath } from '../../config/index.js';
+import { BaseURL, imagePath, responseConfig, tempPath, videoPath } from '../../config/index.js';
 import { relativePath } from '../../utils/index.js';
+import _ from 'lodash';
 
 const multerConfig = multer({ dest: tempPath, limits: 1024 * 1024 * 5 })
 
+// 深拷贝response对象，确保每个接口使用的是独立的response对象
+const response = _.cloneDeep(responseConfig);
 // 上传图片的逻辑控制器
 export const uploadFileController = {
   method: 'post',
@@ -33,9 +36,9 @@ export const uploadFileController = {
 export const removeFilesController = {
   method: 'post',
   handler: async (req, res) => {
-    const { deletedArray } = req.body
+    const { deleteFiles } = req.body
     try {
-      await deletedArray.forEach(item => {
+      await deleteFiles.forEach(item => {
         if (item.fileType.includes('image')) {
           fs.unlinkSync(relativePath(imagePath) + item.fileName)
         } else if (item.fileType.includes('video')) {

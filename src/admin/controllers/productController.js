@@ -1,7 +1,11 @@
 import moment from 'moment/moment.js';
-import { BaseURL, imagePath, response, videoPath } from '../../config/index.js';
+import { BaseURL, imagePath, responseConfig, videoPath } from '../../config/index.js';
 import { createProduct, getProductCategoryList, getProductList, getProductStatusList, updateProduct } from '../models/productModel.js';
+import { validateObject, productObjectStrategies } from '../../utils/validate.js'
+import _ from 'lodash';
 
+// 深拷贝response对象，确保每个接口使用的是独立的response对象
+const response = _.cloneDeep(responseConfig);
 // 查询商品列表的逻辑控制器
 export const getProductListController = {
   method: 'get',
@@ -11,15 +15,21 @@ export const getProductListController = {
         data = data.map(item => {
           item.created_at = moment(item.created_at).format('YYYY-MM-DD HH:mm:ss')
           item.updated_at ? item.updated_at = moment(item.updated_at).format('YYYY-MM-DD HH:mm:ss') : ''
-          if (item.imageArray) {
-            const imageArray = JSON.parse(item.imageArray).map(file => {
-              file.fileName = `${BaseURL}${file.fileType.includes('image') ? imagePath : videoPath}${file.fileName}`
+          const imageFiles = JSON.parse(item.imageFiles).map(file => {
+            file.fileName = BaseURL + imagePath + file.fileName
+            file.fileType = file.fileType
+            return file
+          })
+          item.imageFiles = imageFiles
+          if (item.videoFiles) {
+            const videoFiles = JSON.parse(item.videoFiles).map(file => {
+              file.fileName = BaseURL + videoPath + file.fileName
               file.fileType = file.fileType
               return file
             })
-            item.imageArray = imageArray
+            item.videoFiles = videoFiles
           } else {
-            item.imageArray = []
+            item.videoFiles = []
           }
           return item
         })
@@ -74,6 +84,14 @@ export const getProductStatusListController = {
 export const createProductController = {
   method: 'post',
   handler: (req, res) => {
+    const { imageFiles, videoFiles } = req.body
+    const errorMessage = validateObject(req.body, productObjectStrategies)
+    if (errorMessage) {
+      clonedResponse.message = errorMessage
+      return res.json(clonedResponse)
+    }
+    req.body.imageFiles = JSON.stringify(imageFiles)
+    req.body.videoFiles = JSON.stringify(videoFiles)
     createProduct(req.body)
       .then(data => {
         response.message = '添加商品成功'

@@ -1,9 +1,12 @@
-import { response } from '../../config/index.js';
+import { responseConfig } from '../../config/index.js';
 import { emailRegex, phoneNumberRegex } from '../../utils/index.js';
 import { sendVerifyCode } from '../../utils/mailer.js';
 import redisClient from '../../utils/redis.js';
 import { registerUser, updateUserInfo, verifyLogin, verifyLoginCode } from '../models/authModel.js';
+import _ from 'lodash';
 
+// 深拷贝response对象，确保每个接口使用的是独立的response对象
+const response = _.cloneDeep(responseConfig);
 // 发送验证码的逻辑控制器
 export const sendVerifyCodeController = {
   method: 'post',

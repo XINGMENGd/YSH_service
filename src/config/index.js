@@ -9,4 +9,4 @@ export const imagePath = 'uploads/images/'
 export const videoPath = 'uploads/videos/'
 export const tempPath = 'uploads/temp/'
 // 统一响应配置信息
-export const response = { code: 200, message: '操作成功', data: null }
+export const responseConfig = { code: 200, message: '操作成功', data: null }

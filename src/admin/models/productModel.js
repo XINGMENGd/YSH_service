@@ -51,15 +51,19 @@ export const getProductStatusList = () => {
 // 添加商品
 export const createProduct = (params) => {
   return new Promise((resolve, reject) => {
-    const { description, price, stock, category, status, images: imageArray, seller_id, created_at } = params
+    const { description, price, stock, category, status, seller_id, created_at, imageFiles, videoFiles } = params
+    const hasVideo = videoFiles.length > 2 ? true : false
     const sql = `
-    INSERT INTO product_info
-      (description, price, stock, category, STATUS, imageArray, seller_id, created_at)
-    VALUES
-      ('${description}', ${price}, ${stock}, '${category}', '${status}', '${imageArray}', ${seller_id}, '${created_at}')
-  `;
-
-    connection.query(sql, (error, results) => {
+      INSERT INTO product_info
+        (description, price, stock, category, STATUS, seller_id, created_at, imageFiles, ${hasVideo ? 'videoFiles' : ''})
+      VALUES
+        (?, ?, ?, ?, ?, ?, ?, ?, ${hasVideo ? '?' : ''})
+    `;
+    const values = [description, price, stock, category, status, seller_id, created_at, imageFiles]
+    if (hasVideo) {
+      values.push(videoFiles)
+    }
+    connection.query(sql, values, (error, results) => {
       if (error) {
         return reject(error);
       }
@@ -71,19 +75,25 @@ export const createProduct = (params) => {
 // 修改商品信息
 export const updateProduct = (params) => {
   return new Promise((resolve, reject) => {
-    const { id, description, price, stock, category, status, images: imageArray, updated_at } = params
+    const { id, description, price, stock, category, status, updated_at, imageFiles, videoFiles } = params;
     const sql = `
       UPDATE product_info SET
-        price = ${price}, description = '${description}', stock = ${stock}, category = ${category}, 
-        updated_at = '${updated_at}', imageArray = '${imageArray}', STATUS = ${status}
-      WHERE id = ${id};
-    `
+        price = ?,
+        description = ?,
+        stock = ?,
+        category = ?,
+        STATUS = ?,
+        updated_at = ?,
+        imageFiles = ?,
+        videoFiles = ?
+      WHERE id = ?`;
+    const values = [price, description, stock, category, status, updated_at, imageFiles, videoFiles, id];
 
-    connection.query(sql, (error, results) => {
+    connection.query(sql, values, (error, results) => {
       if (error) {
         return reject(error);
       }
       resolve(results);
     });
-  })
+  });
 };
