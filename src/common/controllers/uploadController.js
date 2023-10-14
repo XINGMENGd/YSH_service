@@ -6,13 +6,12 @@ import _ from 'lodash';
 
 const multerConfig = multer({ dest: tempPath, limits: 1024 * 1024 * 5 })
 
-// 深拷贝response对象，确保每个接口使用的是独立的response对象
-const response = _.cloneDeep(responseConfig);
 // 上传图片的逻辑控制器
 export const uploadFileController = {
   method: 'post',
   handler: async (req, res) => {
     multerConfig.single('file')(req, res, function (err) {
+      const response = _.cloneDeep(responseConfig);
       if (err) {
         res.json(err)
       } else {
@@ -36,6 +35,7 @@ export const uploadFileController = {
 export const removeFilesController = {
   method: 'post',
   handler: async (req, res) => {
+    const response = _.cloneDeep(responseConfig);
     const { deleteFiles } = req.body
     try {
       await deleteFiles.forEach(item => {
@@ -59,6 +59,7 @@ export const uploadChunksController = {
   method: 'post',
   handler: (req, res) => {
     multerConfig.single('file')(req, res, async function (err) {
+      const response = _.cloneDeep(responseConfig);
       const { fileType, index, hash } = req.body;
       let chunksPath = ''
       if (fileType.includes('image')) {
@@ -78,6 +79,7 @@ export const uploadChunksController = {
 export const mergeChunksController = {
   method: 'post',
   handler: (req, res) => {
+    const response = _.cloneDeep(responseConfig);
     const { fileType, hash, name, total } = req.body;
     let chunksPath = ''
     let filePath = ''

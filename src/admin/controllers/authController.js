@@ -4,12 +4,11 @@ import redisClient from '../../utils/redis.js';
 import { verifyLogin, verifyRoles } from '../models/authModel.js';
 import _ from 'lodash';
 
-// 深拷贝response对象，确保每个接口使用的是独立的response对象
-const response = _.cloneDeep(responseConfig);
 // 用户登录的逻辑控制器
 export const loginController = {
   method: 'post',
   handler: (req, res) => {
+    const response = _.cloneDeep(responseConfig);
     const { username, password } = req.body
     if (!username || !password) {
       response.message = '账号信息或密码不能为空'
@@ -33,8 +32,9 @@ export const loginController = {
 export const getRoutesController = {
   method: 'post',
   handler: async (req, res) => {
+    const response = _.cloneDeep(responseConfig);
+    const roles = req.headers['roles']
     try {
-      const roles = req.headers['roles']
       // 读取redis缓存中的路由
       const hasRoutes = await redisClient.get('routes')
       if (!hasRoutes || hasRoutes === '') {

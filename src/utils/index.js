@@ -58,6 +58,21 @@ export const emailRegex = (email) => {
   const isValidEmail = reg.test(email);
   return isValidEmail;
 }
+// 判断属性不为空值（包括数组级对象）
+export const isEmpty = (value) => {
+  if (Array.isArray(value)) {
+    return value.length === 0;
+  }
+  if (typeof value === 'object' && value !== null) {
+    for (let key in value) {
+      if (!isEmpty(value[key])) {
+        return false;
+      }
+    }
+    return true;
+  }
+  return value === undefined || value === null || value === '';
+};
 // 验证手机号格式
 export const phoneNumberRegex = (phoneNumber) => {
   const reg = /^[1-9]\d{9}$/;

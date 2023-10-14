@@ -5,12 +5,11 @@ import redisClient from '../../utils/redis.js';
 import { registerUser, updateUserInfo, verifyLogin, verifyLoginCode } from '../models/authModel.js';
 import _ from 'lodash';
 
-// 深拷贝response对象，确保每个接口使用的是独立的response对象
-const response = _.cloneDeep(responseConfig);
 // 发送验证码的逻辑控制器
 export const sendVerifyCodeController = {
   method: 'post',
   handler: async (req, res) => {
+    const response = _.cloneDeep(responseConfig);
     const { email } = req.body
     // 检验邮箱格式是否正确
     if (!emailRegex(email)) {
@@ -38,6 +37,7 @@ export const sendVerifyCodeController = {
 export const registerController = {
   method: 'post',
   handler: async (req, res) => {
+    const response = _.cloneDeep(responseConfig);
     const { email, verify_code } = req.body
     if (!emailRegex(email)) {
       response.message = '请输入正确的邮箱号'
@@ -67,6 +67,7 @@ export const registerController = {
 export const loginController = {
   method: 'post',
   handler: (req, res) => {
+    const response = _.cloneDeep(responseConfig);
     const { loginId, password } = req.body
     if (!loginId || !password) {
       response.message = '用户信息或密码不能为空'
@@ -97,6 +98,7 @@ export const loginController = {
 export const loginCodeController = {
   method: 'post',
   handler: async (req, res) => {
+    const response = _.cloneDeep(responseConfig);
     const { loginId, verify_code } = req.body
     if (!emailRegex(loginId)) {
       response.message = '请输入正确的邮箱号'
@@ -136,6 +138,7 @@ export const loginCodeController = {
 export const updateUserInfoController = {
   method: 'post',
   handler: (req, res) => {
+    const response = _.cloneDeep(responseConfig);
     const { id, frontend_id, ...updates } = req.body;
     const user_identifier = req.headers['user-identifier']
     if (!id) {

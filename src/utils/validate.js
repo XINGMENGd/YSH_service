@@ -1,7 +1,8 @@
+import { isEmpty } from './index.js'
 // 定义判断逻辑策略对象
 const logicStrategies = {
-  required: (value) => value !== undefined && value !== null && value !== '',
-  numeric: (value) => typeof value === 'number',
+  required: (value) => !isEmpty(value), // 属性不为空值
+  numeric: (value) => typeof value === 'number', // 属性为数据类型
   positiveNumber: (value) => typeof value === 'number' && value > 0, // 匹配数字类型并且大于0
   decimalPlaces: (value, maxPlaces) => {
     const regex = new RegExp(`^-?\\d+(\\.\\d{0,${maxPlaces}})?$`); // 正则匹配小数位数

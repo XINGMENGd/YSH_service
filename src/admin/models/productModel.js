@@ -55,9 +55,9 @@ export const createProduct = (params) => {
     const hasVideo = videoFiles.length > 2 ? true : false
     const sql = `
       INSERT INTO product_info
-        (description, price, stock, category, STATUS, seller_id, created_at, imageFiles, ${hasVideo ? 'videoFiles' : ''})
+        (description, price, stock, category, STATUS, seller_id, created_at, imageFiles ${hasVideo ? ',videoFiles' : ''})
       VALUES
-        (?, ?, ?, ?, ?, ?, ?, ?, ${hasVideo ? '?' : ''})
+        (?, ?, ?, ?, ?, ?, ?, ? ${hasVideo ? ',?' : ''})
     `;
     const values = [description, price, stock, category, status, seller_id, created_at, imageFiles]
     if (hasVideo) {

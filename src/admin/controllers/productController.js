@@ -4,12 +4,11 @@ import { createProduct, getProductCategoryList, getProductList, getProductStatus
 import { validateObject, productObjectStrategies } from '../../utils/validate.js'
 import _ from 'lodash';
 
-// 深拷贝response对象，确保每个接口使用的是独立的response对象
-const response = _.cloneDeep(responseConfig);
 // 查询商品列表的逻辑控制器
 export const getProductListController = {
   method: 'get',
   handler: (req, res) => {
+    const response = _.cloneDeep(responseConfig);
     getProductList(req.query)
       .then(data => {
         data = data.map(item => {
@@ -52,6 +51,7 @@ export const getProductListController = {
 export const getProductCategoryListController = {
   method: 'get',
   handler: (req, res) => {
+    const response = _.cloneDeep(responseConfig);
     getProductCategoryList()
       .then(data => {
         response.message = '获取成功', response.data = data
@@ -68,6 +68,7 @@ export const getProductCategoryListController = {
 export const getProductStatusListController = {
   method: 'get',
   handler: (req, res) => {
+    const response = _.cloneDeep(responseConfig);
     getProductStatusList()
       .then(data => {
         response.message = '获取成功', response.data = data
@@ -84,11 +85,12 @@ export const getProductStatusListController = {
 export const createProductController = {
   method: 'post',
   handler: (req, res) => {
+    const response = _.cloneDeep(responseConfig);
     const { imageFiles, videoFiles } = req.body
     const errorMessage = validateObject(req.body, productObjectStrategies)
     if (errorMessage) {
-      clonedResponse.message = errorMessage
-      return res.json(clonedResponse)
+      response.code = 400, response.message = errorMessage
+      return res.json(response)
     }
     req.body.imageFiles = JSON.stringify(imageFiles)
     req.body.videoFiles = JSON.stringify(videoFiles)
@@ -108,6 +110,7 @@ export const createProductController = {
 export const updateProductController = {
   method: 'post',
   handler: (req, res) => {
+    const response = _.cloneDeep(responseConfig);
     updateProduct(req.body)
       .then(data => {
         response.message = '修改成功'
