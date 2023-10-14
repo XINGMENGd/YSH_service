@@ -15,7 +15,7 @@ export const uploadFileController = {
       if (err) {
         res.json(err)
       } else {
-        const { name, fileType } = req.body
+        const { name, type: fileType } = req.body
         let filePath = ''
         if (fileType.includes('image')) {
           filePath = imagePath
@@ -39,10 +39,10 @@ export const removeFilesController = {
     const { deleteFiles } = req.body
     try {
       await deleteFiles.forEach(item => {
-        if (item.fileType.includes('image')) {
-          fs.unlinkSync(relativePath(imagePath) + item.fileName)
-        } else if (item.fileType.includes('video')) {
-          fs.unlinkSync(relativePath(videoPath) + item.fileName)
+        if (item.type.includes('image')) {
+          fs.unlinkSync(relativePath(imagePath) + item.name)
+        } else if (item.type.includes('video')) {
+          fs.unlinkSync(relativePath(videoPath) + item.name)
         }
       })
       response.message = '删除成功'
@@ -60,7 +60,7 @@ export const uploadChunksController = {
   handler: (req, res) => {
     multerConfig.single('file')(req, res, async function (err) {
       const response = _.cloneDeep(responseConfig);
-      const { fileType, index, hash } = req.body;
+      const { type: fileType, index, hash } = req.body;
       let chunksPath = ''
       if (fileType.includes('image')) {
         chunksPath = relativePath(imagePath + hash + '/')
@@ -80,7 +80,7 @@ export const mergeChunksController = {
   method: 'post',
   handler: (req, res) => {
     const response = _.cloneDeep(responseConfig);
-    const { fileType, hash, name, total } = req.body;
+    const { type: fileType, hash, name, total } = req.body;
     let chunksPath = ''
     let filePath = ''
     if (fileType.includes('image')) {

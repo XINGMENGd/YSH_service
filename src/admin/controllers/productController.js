@@ -15,15 +15,15 @@ export const getProductListController = {
           item.created_at = moment(item.created_at).format('YYYY-MM-DD HH:mm:ss')
           item.updated_at ? item.updated_at = moment(item.updated_at).format('YYYY-MM-DD HH:mm:ss') : ''
           const imageFiles = JSON.parse(item.imageFiles).map(file => {
-            file.fileName = BaseURL + imagePath + file.fileName
-            file.fileType = file.fileType
+            file.name = BaseURL + imagePath + file.name
+            file.type = file.type
             return file
           })
           item.imageFiles = imageFiles
           if (item.videoFiles) {
             const videoFiles = JSON.parse(item.videoFiles).map(file => {
-              file.fileName = BaseURL + videoPath + file.fileName
-              file.fileType = file.fileType
+              file.name = BaseURL + videoPath + file.name
+              file.type = file.type
               return file
             })
             item.videoFiles = videoFiles
@@ -111,6 +111,14 @@ export const updateProductController = {
   method: 'post',
   handler: (req, res) => {
     const response = _.cloneDeep(responseConfig);
+    const { imageFiles, videoFiles } = req.body
+    const errorMessage = validateObject(req.body, productObjectStrategies)
+    if (errorMessage) {
+      response.code = 400, response.message = errorMessage
+      return res.json(response)
+    }
+    req.body.imageFiles = JSON.stringify(imageFiles)
+    req.body.videoFiles = JSON.stringify(videoFiles)
     updateProduct(req.body)
       .then(data => {
         response.message = '修改成功'
