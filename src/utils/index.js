@@ -1,3 +1,11 @@
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
+
+/**
+ * 递归处理路由，将之处理成树状结构返回
+ * @param {Array} menuList 
+ * @returns Tree
+ */
 export const MapTree = (menuList) => {
   const tree = [];
   const idMap = new Map();
@@ -43,3 +51,55 @@ export const MapTree = (menuList) => {
   //   // return tree;
 }
 
+/**
+ * 匹配根路径
+ * @param {String} filePath 
+ * @returns 
+ */
+export const relativePath = (filePath) => {
+  const rootPath = dirname(dirname(dirname(fileURLToPath(import.meta.url))));
+  const srcPath = join(rootPath, filePath);
+  return srcPath;
+};
+
+/**
+ * 验证邮箱号码格式
+ * @param {String} email 
+ * @returns 
+ */
+export const emailRegex = (email) => {
+  const reg = /^[a-z0-9._%-]+@[a-z0-9.-]*[a-z0-9]{1}\.[a-z]{2,4}$/;
+  const isValidEmail = reg.test(email);
+  return isValidEmail;
+}
+
+/**
+ * 判断属性不为空值（包括数组级对象）
+ * @param {*} value 
+ * @returns 
+ */
+export const isEmpty = (value) => {
+  if (Array.isArray(value)) {
+    return value.length === 0;
+  }
+  if (typeof value === 'object' && value !== null) {
+    for (let key in value) {
+      if (!isEmpty(value[key])) {
+        return false;
+      }
+    }
+    return true;
+  }
+  return value === undefined || value === null || value === '';
+};
+
+/**
+ * 验证手机号格式
+ * @param {Number} phoneNumber 
+ * @returns 
+ */
+export const phoneNumberRegex = (phoneNumber) => {
+  const reg = /^[1-9]\d{9}$/;
+  const isValidPhoneNumber = reg.test(phoneNumber);
+  return isValidPhoneNumber;
+}

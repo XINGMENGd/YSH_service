@@ -1,10 +1,11 @@
-**项目目录结构
-- /public                      （公共静态资源）
+### 项目目录结构
+
+- / public                      （公共静态资源）
   - /css
   - /images
   - /js
 
-- /uploads                     （用户上传的图片文件夹）
+- / uploads                     （用户上传的图片文件夹）
     - image1.jpg
     - image2.jpg
 
