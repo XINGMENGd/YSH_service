@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { responseConfig } from '../../config/index.js';
 import { emailRegex, phoneNumberRegex } from '../../utils/index.js';
-import { sendVerifyCode } from '../../utils/mailer.js';
+import sendVerifyCode from '../../utils/mailer.js';
 import redisClient from '../../utils/redis.js';
 import * as authModel from '../models/authModel.js';
 

@@ -1,39 +1,41 @@
 import createdToken from '../../utils/createdToken.js';
-import connection from '../../utils/mysql.js';
+import db from '../../utils/mysql.js';
+import { promisify } from 'util';
+// 将 createToken 方法转换成 Promise 形式
+const createdTokenPromisified = promisify(createdToken);
 
 // 验证用户登录
 export const verifyLogin = (params) => {
-  return new Promise((resolve, reject) => {
-    const { username, password } = params;
-    const sql = `SELECT * FROM admin_users WHERE username = ? AND password = ?`
-    
-    connection.query(sql, [username, password], (error, results) => {
-      if (error) {
-        return reject(error);
+  return new Promise(async (resolve, reject) => {
+    try {
+      const { username, password } = params;
+      const sql = `SELECT * FROM admin_users WHERE username = ? AND password = ?`;
+
+      const data = await db(sql, [username, password])
+      if (!data.length) {
+        return reject(null)
       }
-      // 验证通过，生成 Token
-      results.length !== 0 ? createdToken(results[0], '24h', (error, data) => {
-        if (error) {
-          return reject(error)
-        }
-        results[0].token = data.token
-        results[0].expires_at = data.expires_at
-        resolve(results[0]);
-      }) : reject(null) // 查询不到该用户(sql执行无误，但没有用户信息)
-    });
+      const res = await createdTokenPromisified(data[0], '24h');
+      data[0].token = res.token;
+      data[0].expires_at = res.expires_at;
+      resolve(data[0])
+    } catch (error) {
+      console.log(error);
+      reject(error)
+    }
   })
 };
 
 // 验证用户权限返回路由
 export const verifyRoles = () => {
-  return new Promise((resolve, reject) => {
-    const sql = `SELECT * FROM route_menu`
+  return new Promise(async (resolve, reject) => {
+    try {
+      const sql = `SELECT * FROM route_menu`;
 
-    connection.query(sql, (error, results) => {
-      if (error) {
-        return reject(error);
-      }
-      resolve(results);
-    });
+      const data = await db(sql)
+      resolve(data)
+    } catch (error) {
+      reject(error)
+    }
   })
 };

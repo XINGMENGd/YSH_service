@@ -7,7 +7,7 @@ import { relativePath } from '../utils/index.js'
 const transporter = nodemailer.createTransport(mailConfig)
 
 // 发送邮件
-export function sendVerifyCode(email, verify_code) {
+export default function (email, verify_code) {
   return new Promise((resolve, reject) => {
     const template = relativePath('/src/frontend/views/emailTemplate.html')
 
