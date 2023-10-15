@@ -5,12 +5,9 @@ import connection from '../../utils/mysql.js';
 export const verifyLogin = (params) => {
   return new Promise((resolve, reject) => {
     const { username, password } = params;
-    const sql = `
-      SELECT * FROM admin_users 
-        WHERE
-      username = '${username}' AND password = ${password}
-    `
-    connection.query(sql, (error, results) => {
+    const sql = `SELECT * FROM admin_users WHERE username = ? AND password = ?`
+    
+    connection.query(sql, [username, password], (error, results) => {
       if (error) {
         return reject(error);
       }

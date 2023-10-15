@@ -1,3 +1,4 @@
+// 数据库连接配置信息
 const mysqlConfig = {
   host: 'localhost',       // 连接数据库服务器地址
   port: 3306,              // 端口号

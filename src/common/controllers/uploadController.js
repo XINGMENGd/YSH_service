@@ -1,8 +1,8 @@
 import fs from 'fs';
+import _ from 'lodash';
 import multer from "multer";
 import { BaseURL, imagePath, responseConfig, tempPath, videoPath } from '../../config/index.js';
 import { relativePath } from '../../utils/index.js';
-import _ from 'lodash';
 
 const multerConfig = multer({ dest: tempPath, limits: 1024 * 1024 * 5 })
 

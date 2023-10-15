@@ -63,17 +63,6 @@ export const relativePath = (filePath) => {
 };
 
 /**
- * 验证邮箱号码格式
- * @param {String} email 
- * @returns 
- */
-export const emailRegex = (email) => {
-  const reg = /^[a-z0-9._%-]+@[a-z0-9.-]*[a-z0-9]{1}\.[a-z]{2,4}$/;
-  const isValidEmail = reg.test(email);
-  return isValidEmail;
-}
-
-/**
  * 判断属性不为空值（包括数组级对象）
  * @param {*} value 
  * @returns 
@@ -92,6 +81,17 @@ export const isEmpty = (value) => {
   }
   return value === undefined || value === null || value === '';
 };
+
+/**
+ * 验证邮箱号码格式
+ * @param {String} email 
+ * @returns 
+ */
+export const emailRegex = (email) => {
+  const reg = /^[a-z0-9._%-]+@[a-z0-9.-]*[a-z0-9]{1}\.[a-z]{2,4}$/;
+  const isValidEmail = reg.test(email);
+  return isValidEmail;
+}
 
 /**
  * 验证手机号格式

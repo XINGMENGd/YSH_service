@@ -62,7 +62,7 @@ export const verifyLogin = (params) => {
 };
 
 // 验证用户验证码登录
-export const verifyLoginCode = (params) => {
+export const verifyCodeLogin = (params) => {
   return new Promise((resolve, reject) => {
     const { loginId, verify_mode } = params;
     let condition = "";
@@ -95,9 +95,7 @@ export const verifyLoginCode = (params) => {
 export const updateUserInfo = (params) => {
   return new Promise((resolve, reject) => {
     const { id, frontend_id, ...updates } = params;
-    const updateStatements = Object.entries(updates).map(([key, value]) => {
-      return `${key} = '${value}'`;
-    });
+    const updateStatements = Object.entries(updates).map(([key, value]) => `${key} = '${value}'`);
     const sql = `UPDATE frontend_users SET ${updateStatements.join(', ')} WHERE id = ${id}`;
 
     connection.query(sql, (error, results) => {

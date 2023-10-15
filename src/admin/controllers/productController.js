@@ -1,35 +1,29 @@
+import _ from 'lodash';
 import moment from 'moment/moment.js';
 import { BaseURL, imagePath, responseConfig, videoPath } from '../../config/index.js';
-import { createProduct, getProductCategoryList, getProductList, getProductStatusList, updateProduct } from '../models/productModel.js';
-import { validateObject, productObjectStrategies } from '../../utils/validate.js'
-import _ from 'lodash';
+import { productStrategies, validate } from '../../utils/validate.js';
+import * as productModel from '../models/productModel.js';
 
 // 查询商品列表的逻辑控制器
 export const getProductListController = {
   method: 'get',
   handler: (req, res) => {
     const response = _.cloneDeep(responseConfig);
-    getProductList(req.query)
+    productModel.getProductList(req.query)
       .then(data => {
         data = data.map(item => {
           item.created_at = moment(item.created_at).format('YYYY-MM-DD HH:mm:ss')
           item.updated_at ? item.updated_at = moment(item.updated_at).format('YYYY-MM-DD HH:mm:ss') : ''
-          const imageFiles = JSON.parse(item.imageFiles).map(file => {
+          item.imageFiles = JSON.parse(item.imageFiles).map(file => {
             file.name = BaseURL + imagePath + file.name
             file.type = file.type
             return file
           })
-          item.imageFiles = imageFiles
-          if (item.videoFiles) {
-            const videoFiles = JSON.parse(item.videoFiles).map(file => {
-              file.name = BaseURL + videoPath + file.name
-              file.type = file.type
-              return file
-            })
-            item.videoFiles = videoFiles
-          } else {
-            item.videoFiles = []
-          }
+          item.videoFiles = JSON.parse(item.videoFiles).map(file => {
+            file.name = BaseURL + videoPath + file.name
+            file.type = file.type
+            return file
+          })
           return item
         })
         response.message = '获取成功'
@@ -52,7 +46,7 @@ export const getProductCategoryListController = {
   method: 'get',
   handler: (req, res) => {
     const response = _.cloneDeep(responseConfig);
-    getProductCategoryList()
+    productModel.getProductCategoryList()
       .then(data => {
         response.message = '获取成功', response.data = data
         res.json(response);
@@ -69,7 +63,7 @@ export const getProductStatusListController = {
   method: 'get',
   handler: (req, res) => {
     const response = _.cloneDeep(responseConfig);
-    getProductStatusList()
+    productModel.getProductStatusList()
       .then(data => {
         response.message = '获取成功', response.data = data
         res.json(response);
@@ -87,14 +81,14 @@ export const createProductController = {
   handler: (req, res) => {
     const response = _.cloneDeep(responseConfig);
     const { imageFiles, videoFiles } = req.body
-    const errorMessage = validateObject(req.body, productObjectStrategies)
+    const errorMessage = validate(req.body, productStrategies)
     if (errorMessage) {
       response.code = 400, response.message = errorMessage
       return res.json(response)
     }
     req.body.imageFiles = JSON.stringify(imageFiles)
     req.body.videoFiles = JSON.stringify(videoFiles)
-    createProduct(req.body)
+    productModel.createProduct(req.body)
       .then(data => {
         response.message = '添加商品成功'
         res.json(response);
@@ -112,14 +106,14 @@ export const updateProductController = {
   handler: (req, res) => {
     const response = _.cloneDeep(responseConfig);
     const { imageFiles, videoFiles } = req.body
-    const errorMessage = validateObject(req.body, productObjectStrategies)
+    const errorMessage = validate(req.body, productStrategies)
     if (errorMessage) {
       response.code = 400, response.message = errorMessage
       return res.json(response)
     }
     req.body.imageFiles = JSON.stringify(imageFiles)
     req.body.videoFiles = JSON.stringify(videoFiles)
-    updateProduct(req.body)
+    productModel.updateProduct(req.body)
       .then(data => {
         response.message = '修改成功'
         res.json(response);

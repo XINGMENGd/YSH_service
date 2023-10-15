@@ -12,4 +12,4 @@ connection.connect(err => {
   console.log('mysql数据库连接成功')
 });
 
-export default connection
+export default connection 

@@ -1,9 +1,9 @@
+import _ from 'lodash';
 import { responseConfig } from '../../config/index.js';
 import { emailRegex, phoneNumberRegex } from '../../utils/index.js';
 import { sendVerifyCode } from '../../utils/mailer.js';
 import redisClient from '../../utils/redis.js';
-import { registerUser, updateUserInfo, verifyLogin, verifyLoginCode } from '../models/authModel.js';
-import _ from 'lodash';
+import * as authModel from '../models/authModel.js';
 
 // 发送验证码的逻辑控制器
 export const sendVerifyCodeController = {
@@ -47,7 +47,7 @@ export const registerController = {
     const value = await redisClient.get(email)
     if (verify_code == value) {
       // 注册新用户
-      registerUser(req.body)
+      authModel.registerUser(req.body)
         .then(data => {
           response.message = '注册成功'
           res.json(response);
@@ -81,7 +81,7 @@ export const loginController = {
       verify_mode = 'username'
     }
     req.body.verify_mode = verify_mode
-    verifyLogin(req.body)
+    authModel.verifyLogin(req.body)
       .then(data => {
         const { password, ..._data } = data
         response.message = '登录成功'; response.data = _data;
@@ -95,7 +95,7 @@ export const loginController = {
 }
 
 // 用户验证码登录的逻辑控制器
-export const loginCodeController = {
+export const verifyCodeLoginController = {
   method: 'post',
   handler: async (req, res) => {
     const response = _.cloneDeep(responseConfig);
@@ -117,7 +117,7 @@ export const loginCodeController = {
         verify_mode = 'phone'
       }
       req.body.verify_mode = verify_mode
-      verifyLoginCode(req.body)
+      authModel.verifyCodeLogin(req.body)
         .then(data => {
           const { password, ..._data } = data
           response.message = '登录成功'; response.data = _data;
@@ -151,7 +151,7 @@ export const updateUserInfoController = {
       response.message = '请勿尝试篡改他人信息'
       return res.json(response)
     }
-    updateUserInfo(req.body)
+    authModel.updateUserInfo(req.body)
       .then(data => {
         response.message = '更新成功'
         res.json(response);

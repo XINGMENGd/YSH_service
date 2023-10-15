@@ -3,13 +3,19 @@ import connection from '../../utils/mysql.js';
 // 查询商品列表
 export const getProductList = (params) => {
   return new Promise((resolve, reject) => {
-    const { page = 1, size = 10, offset = (page - 1) * size, sort, direction } = params
-    const sql = `
+    const { page = 1, size = 10, sort, direction } = params;
+    const offset = (page - 1) * size;
+    let sql = `
       SELECT *,
-        ( SELECT COUNT(*) FROM ( SELECT * FROM product_info ) AS sub_query ) AS total_rows 
-      FROM
-        ( SELECT * FROM product_info ${sort && direction ? `ORDER BY ${sort} ${direction}` : ''}  LIMIT  ${offset}, ${size} ) AS main_query
+        (SELECT COUNT(*) FROM product_info) AS total_rows 
+      FROM product_info
     `;
+
+    if (sort && direction) {
+      sql += `ORDER BY ${sort} ${direction} `;
+    }
+
+    sql += `LIMIT ${offset}, ${size}`;
 
     connection.query(sql, (error, results) => {
       if (error) {
@@ -17,7 +23,7 @@ export const getProductList = (params) => {
       }
       resolve(results);
     });
-  })
+  });
 };
 
 // 查询商品分类列表
@@ -52,17 +58,14 @@ export const getProductStatusList = () => {
 export const createProduct = (params) => {
   return new Promise((resolve, reject) => {
     const { description, price, stock, category, status, seller_id, created_at, imageFiles, videoFiles } = params
-    const hasVideo = videoFiles.length > 2 ? true : false
+    const values = [description, price, stock, category, status, seller_id, created_at, imageFiles, videoFiles]
     const sql = `
       INSERT INTO product_info
-        (description, price, stock, category, STATUS, seller_id, created_at, imageFiles ${hasVideo ? ',videoFiles' : ''})
+        (description, price, stock, category, STATUS, seller_id, created_at, imageFiles, videoFiles)
       VALUES
-        (?, ?, ?, ?, ?, ?, ?, ? ${hasVideo ? ',?' : ''})
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
-    const values = [description, price, stock, category, status, seller_id, created_at, imageFiles]
-    if (hasVideo) {
-      values.push(videoFiles)
-    }
+
     connection.query(sql, values, (error, results) => {
       if (error) {
         return reject(error);
@@ -76,6 +79,7 @@ export const createProduct = (params) => {
 export const updateProduct = (params) => {
   return new Promise((resolve, reject) => {
     const { id, description, price, stock, category, status, updated_at, imageFiles, videoFiles } = params;
+    const values = [price, description, stock, category, status, updated_at, imageFiles, videoFiles, id];
     const sql = `
       UPDATE product_info SET
         price = ?,
@@ -87,7 +91,6 @@ export const updateProduct = (params) => {
         imageFiles = ?,
         videoFiles = ?
       WHERE id = ?`;
-    const values = [price, description, stock, category, status, updated_at, imageFiles, videoFiles, id];
 
     connection.query(sql, values, (error, results) => {
       if (error) {

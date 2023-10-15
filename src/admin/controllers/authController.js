@@ -1,20 +1,21 @@
+import _ from 'lodash';
 import { responseConfig } from '../../config/index.js';
 import { MapTree } from '../../utils/index.js';
 import redisClient from '../../utils/redis.js';
-import { verifyLogin, verifyRoles } from '../models/authModel.js';
-import _ from 'lodash';
+import { adminLoginStrategies, validate } from '../../utils/validate.js';
+import * as authModel from '../models/authModel.js';
 
 // 用户登录的逻辑控制器
 export const loginController = {
   method: 'post',
   handler: (req, res) => {
     const response = _.cloneDeep(responseConfig);
-    const { username, password } = req.body
-    if (!username || !password) {
-      response.message = '账号信息或密码不能为空'
+    const errorMessage = validate(req.body, adminLoginStrategies)
+    if (errorMessage) {
+      response.code = 400, response.message = errorMessage
       return res.json(response)
     }
-    verifyLogin(req.body)
+    authModel.verifyLogin(req.body)
       .then(data => {
         const { password, ..._data } = data
         response.message = '登录成功'
@@ -39,7 +40,7 @@ export const getRoutesController = {
       const hasRoutes = await redisClient.get('routes')
       if (!hasRoutes || hasRoutes === '') {
         // 不存在缓存，执行sql查询数据库存入缓存后筛选路由返回
-        const routes = await verifyRoles()
+        const routes = await authModel.verifyRoles()
         await redisClient.set('routes', JSON.stringify(routes))
         const filteredRoutes = routes.filter((route) => route.roles.includes(roles));
         response.message = '获取成功'; response.data = MapTree(filteredRoutes)
