@@ -9,7 +9,7 @@ import { relativePath } from '../utils/index.js';
 import tokenAuth from './tokenAuth.js';
 
 export function configureApp(app) {
-  // app.use(compression()); // 压缩
+  // app.use(compression()); // 开启gzip压缩
   app.use(cors()); // 配置跨域
   app.use(tokenAuth); // 配置token验证
   app.use(express.json()); // 配置解析 JSON 数据

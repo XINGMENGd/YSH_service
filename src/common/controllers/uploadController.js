@@ -12,19 +12,21 @@ export const uploadFileController = {
   handler: async (req, res) => {
     multerConfig.single('file')(req, res, function (err) {
       const response = _.cloneDeep(responseConfig);
-      if (err) {
-        res.json(err)
-      } else {
-        const { name, type: fileType } = req.body
-        let filePath = ''
-        if (fileType.includes('image')) {
-          filePath = imagePath
-        } else if (fileType.includes('video')) {
-          filePath = videoPath
-        }
+      if (err) return res.json(err)
+      const { name, type: fileType } = req.body
+      let filePath = ''
+      if (fileType.includes('image')) {
+        filePath = imagePath
+      } else if (fileType.includes('video')) {
+        filePath = videoPath
+      }
+      try {
         fs.mkdirSync(filePath, { recursive: true }); // recursive 使用递归创建目录，如果父目录不存在会先创建
         fs.renameSync(req.file.path, filePath + name)
         response.message = '上传成功'; response.data = { img_url: BaseURL + filePath + name }
+        res.json(response)
+      } catch (error) {
+        response.message = '上传失败'; response.data = error
         res.json(response)
       }
     })
@@ -47,8 +49,8 @@ export const removeFilesController = {
       })
       response.message = '删除成功'
       res.json(response)
-    } catch (err) {
-      response.message = '文件不存在'
+    } catch (error) {
+      response.message = '文件不存在'; response.data = error
       res.json(response)
     }
   }
@@ -67,10 +69,15 @@ export const uploadChunksController = {
       } else if (fileType.includes('video')) {
         chunksPath = relativePath(videoPath + hash + '/')
       }
-      fs.mkdirSync(chunksPath, { recursive: true }); // recursive 使用递归创建目录，如果父目录不存在会先创建
-      fs.renameSync(req.file.path, chunksPath + hash + '-' + index)
-      response.message = '分片上传成功'
-      res.json(response)
+      try {
+        fs.mkdirSync(chunksPath, { recursive: true }); // recursive 使用递归创建目录，如果父目录不存在会先创建
+        fs.renameSync(req.file.path, chunksPath + hash + '-' + index)
+        response.message = '分片上传成功'
+        res.json(response)
+      } catch (error) {
+        response.message = '分片上传成功'; response.data = error
+        res.json(response)
+      }
     })
   }
 }
@@ -95,13 +102,18 @@ export const mergeChunksController = {
       response.message = '上传文件分片异常'
       return res.json(response)
     }
-    fs.writeFileSync(filePath + name, '')
-    for (let i = 0; i < total; i++) {
-      fs.appendFileSync(filePath + name, fs.readFileSync(chunksPath + hash + '-' + i))
-      fs.unlinkSync(chunksPath + hash + '-' + i)
+    try {
+      fs.writeFileSync(filePath + name, '')
+      for (let i = 0; i < total; i++) {
+        fs.appendFileSync(filePath + name, fs.readFileSync(chunksPath + hash + '-' + i))
+        fs.unlinkSync(chunksPath + hash + '-' + i)
+      }
+      fs.rmdirSync(chunksPath)
+      response.message = '文件上传成功'; response.data = { img_url: BaseURL + filePath + name }
+      res.json(response)
+    } catch (error) {
+      response.message = '文件上传出现问题'; response.data = error
+      res.json(response)
     }
-    fs.rmdirSync(chunksPath)
-    response.message = '文件上传成功'; response.data = { img_url: BaseURL + filePath + name }
-    res.json(response)
   }
 }

@@ -1,21 +1,25 @@
 import mysql from 'mysql';
 import mysqlConfig from '../config/mysql.js';
 
+// 创建连接池
+const pool = mysql.createPool(mysqlConfig);
+
+// db 是 Database 的缩写，表示数据库
 function dbSql(sql, data = null) {
   return new Promise((resolve, reject) => {
-    // 创建连接对象
-    const connection = mysql.createConnection(mysqlConfig);
-    // 连接到MySQL服务器
-    connection.connect(err => {
-      if (err) return console.error('数据库连接失败', err) // 数据库连接错误，抛出错误信息
-    });
-
-    // 执行sql
-    connection.query(sql, data, (err, result) => {
-      // 关闭数据库连接
-      connection.end()
-      if (err) return reject(err)
-      resolve(result)
+    // 从连接池中获取连接
+    pool.getConnection((error, connection) => {
+      if (error) return reject(error) // 获取连接出现错误
+      // 执行sql
+      connection.query(sql, data, (err, result) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(result)
+        }
+        // 释放连接对象(放回连接池)
+        connection.release()
+      })
     })
   })
 }

@@ -16,20 +16,18 @@ export const sendVerifyCodeController = {
       response.message = '请输入正确的邮箱号'
       return res.json(response);
     }
-    const verify_code = '123456'
-    // const verify_code = String(Math.floor(Math.random() * 1000000)).padEnd(6, '0') // 生成6位随机验证码
-    await redisClient.set(email, verify_code) // 往redis写入邮箱验证码
-    await redisClient.expire(email, 60 * 30) // 设置验证码过期时间
-    // 发送验证码
-    sendVerifyCode(email, verify_code)
-      .then(data => {
-        response.message = '发送成功'
-        res.json(response);
-      })
-      .catch(error => {
-        response.message = '发送失败', response.data = error
-        res.json(response);
-      })
+    try {
+      const verify_code = '123456'
+      // const verify_code = String(Math.floor(Math.random() * 1000000)).padEnd(6, '0') // 生成6位随机验证码
+      await redisClient.set(email, verify_code) // 往redis写入邮箱验证码
+      await redisClient.expire(email, 60 * 30) // 设置验证码过期时间
+      await sendVerifyCode(email, verify_code) // 发送验证码
+      response.message = '发送成功'
+      res.json(response);
+    } catch (error) {
+      response.message = '发送失败'; response.data = error
+      res.json(response);
+    }
   }
 }
 
@@ -43,21 +41,17 @@ export const registerController = {
       response.message = '请输入正确的邮箱号'
       return res.json(response);
     }
-    // 从redis查询验证码是否有效
-    const value = await redisClient.get(email)
-    if (verify_code == value) {
-      // 注册新用户
-      authModel.registerUser(req.body)
-        .then(data => {
-          response.message = '注册成功'
-          res.json(response);
-        })
-        .catch(error => {
-          response.message = error
-          res.json(response);
-        })
-    } else {
-      response.message = '验证码错误或已过期'
+    try {
+      const value = await redisClient.get(email) // 从redis查询验证码是否有效
+      if (verify_code !== value) {
+        response.message = '验证码错误或已过期'
+        return res.json(response);
+      }
+      await authModel.registerUser(req.body) // 注册新用户
+      response.message = '注册成功'
+      res.json(response);
+    } catch (error) {
+      response.message = error
       res.json(response);
     }
   }
@@ -66,31 +60,28 @@ export const registerController = {
 // 用户登录的逻辑控制器
 export const loginController = {
   method: 'post',
-  handler: (req, res) => {
+  handler: async (req, res) => {
     const response = _.cloneDeep(responseConfig);
     const { loginId, password } = req.body
     if (!loginId || !password) {
       response.message = '用户信息或密码不能为空'
       return res.json(response)
     }
-    // 判断登录类型  1.邮箱登录 2.用户名登录
-    let verify_mode = ''
+    let verify_mode = '' // 判断登录类型  1.邮箱登录 2.用户名登录
     if (emailRegex(loginId)) {
       verify_mode = 'email'
     } else {
       verify_mode = 'username'
     }
     req.body.verify_mode = verify_mode
-    authModel.verifyLogin(req.body)
-      .then(data => {
-        const { password, ..._data } = data
-        response.message = '登录成功'; response.data = _data;
-        res.json(response);
-      })
-      .catch(error => {
-        response.message = '用户信息或密码错误'; response.data = error;
-        res.json(response);
-      })
+    try {
+      const { password: _password, ..._data } = await authModel.verifyLogin(req.body)
+      response.message = '登录成功'; response.data = _data;
+      res.json(response);
+    } catch (error) {
+      response.message = '用户信息或密码错误'; response.data = error;
+      res.json(response);
+    }
   }
 }
 
@@ -107,28 +98,26 @@ export const verifyCodeLoginController = {
       response.message = '请输入验证码'
       return res.json(response);
     }
-    const value = await redisClient.get(loginId)
-    if (verify_code == value) {
-      // 判断验证码登录类型  1.邮箱验证码登录 2.手机验证码登录
-      let verify_mode = ''
-      if (emailRegex(loginId)) {
-        verify_mode = 'email'
-      } else if (phoneNumberRegex(loginId)) {
-        verify_mode = 'phone'
+    try {
+      const value = await redisClient.get(loginId) // 从redis查询验证码是否有效
+      if (verify_code == value) {
+        // 判断验证码登录类型  1.邮箱验证码登录 2.手机验证码登录
+        let verify_mode = ''
+        if (emailRegex(loginId)) {
+          verify_mode = 'email'
+        } else if (phoneNumberRegex(loginId)) {
+          verify_mode = 'phone'
+        }
+        req.body.verify_mode = verify_mode
+        const { password, ..._data } = await authModel.verifyCodeLogin(req.body)
+        response.message = '登录成功'; response.data = _data;
+        res.json(response);
+      } else {
+        response.message = '验证码错误或已过期'
+        res.json(response);
       }
-      req.body.verify_mode = verify_mode
-      authModel.verifyCodeLogin(req.body)
-        .then(data => {
-          const { password, ..._data } = data
-          response.message = '登录成功'; response.data = _data;
-          res.json(response);
-        })
-        .catch(error => {
-          response.message = '登录失败'; response.data = error;
-          res.json(response);
-        })
-    } else {
-      response.message = '验证码错误或已过期'
+    } catch (error) {
+      response.message = '登录失败'; response.data = error;
       res.json(response);
     }
   }
@@ -137,7 +126,7 @@ export const verifyCodeLoginController = {
 // 更新用户信息的逻辑控制器
 export const updateUserInfoController = {
   method: 'post',
-  handler: (req, res) => {
+  handler: async (req, res) => {
     const response = _.cloneDeep(responseConfig);
     const { id, frontend_id, ...updates } = req.body;
     const user_identifier = req.headers['user-identifier']
@@ -151,14 +140,13 @@ export const updateUserInfoController = {
       response.message = '请勿尝试篡改他人信息'
       return res.json(response)
     }
-    authModel.updateUserInfo(req.body)
-      .then(data => {
-        response.message = '更新成功'
-        res.json(response);
-      })
-      .catch(error => {
-        response.message = error
-        res.json(response);
-      })
+    try {
+      await authModel.updateUserInfo(req.body)
+      response.message = '更新成功'
+      res.json(response);
+    } catch (error) {
+      response.message = error
+      res.json(response);
+    }
   }
 }

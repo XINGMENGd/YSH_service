@@ -7,19 +7,18 @@ const createdTokenPromisified = promisify(createdToken);
 // 注册新用户
 export const registerUser = (params) => {
   return new Promise(async (resolve, reject) => {
+    const { email, password } = params;
+    const sql = `
+      INSERT INTO frontend_users (email, password)
+        SELECT ?, ?
+        FROM DUAL
+      WHERE NOT EXISTS (
+        SELECT *
+        FROM frontend_users
+        WHERE email = ?
+      )
+    `;
     try {
-      const { email, password } = params;
-      const sql = `
-        INSERT INTO frontend_users (email, password)
-          SELECT ?, ?
-          FROM DUAL
-        WHERE NOT EXISTS (
-          SELECT *
-          FROM frontend_users
-          WHERE email = ?
-        )
-      `;
-
       const data = await db(sql, [email, password, email])
       if (data.affectedRows === 0) { return reject('该邮箱已注册') }
       resolve(data);
@@ -32,24 +31,21 @@ export const registerUser = (params) => {
 // 验证用户登录
 export const verifyLogin = (params) => {
   return new Promise(async (resolve, reject) => {
+    const { loginId, password, verify_mode } = params;
+    let condition = "";
+    if (verify_mode == 'email') {
+      condition = `email = '${loginId}'`
+    } else {
+      condition = `username = '${loginId}'`;
+    }
+    const sql = `
+      SELECT * FROM frontend_users 
+        WHERE
+      ${condition} AND password = ${password}
+    `
     try {
-      const { loginId, password, verify_mode } = params;
-      let condition = "";
-      if (verify_mode == 'email') {
-        condition = `email = '${loginId}'`
-      } else {
-        condition = `username = '${loginId}'`;
-      }
-      const sql = `
-        SELECT * FROM frontend_users 
-          WHERE
-        ${condition} AND password = ${password}
-      `
-
       const data = await db(sql)
-      if (!data.length) {
-        return reject(null)
-      }
+      if (!data.length) return reject(null)
       const res = await createdTokenPromisified(data[0], '24h')
       data[0].token = res.token
       data[0].expires_at = res.expires_at
@@ -63,20 +59,17 @@ export const verifyLogin = (params) => {
 // 验证用户验证码登录   似乎需要修改
 export const verifyCodeLogin = (params) => {
   return new Promise(async (resolve, reject) => {
+    const { loginId, verify_mode } = params;
+    let condition = "";
+    if (verify_mode == 'email') {
+      condition = `email = '${loginId}'`
+    } else if (verify_mode == 'phone') {
+      condition = `phone_number = '${loginId}'`;
+    }
+    const sql = `SELECT * FROM frontend_users WHERE ${condition}`
     try {
-      const { loginId, verify_mode } = params;
-      let condition = "";
-      if (verify_mode == 'email') {
-        condition = `email = '${loginId}'`
-      } else if (verify_mode == 'phone') {
-        condition = `phone_number = '${loginId}'`;
-      }
-      const sql = `SELECT * FROM frontend_users WHERE ${condition}`
-
       const data = await db(sql)
-      if (!data.length) {
-        return reject(null)
-      }
+      if (!data.length) return reject(null)
       const res = await createdTokenPromisified(data[0], '24h')
       data[0].token = res.token
       data[0].expires_at = res.expires_at
@@ -90,11 +83,10 @@ export const verifyCodeLogin = (params) => {
 // 更新用户信息
 export const updateUserInfo = (params) => {
   return new Promise(async (resolve, reject) => {
+    const { id, frontend_id, ...updates } = params;
+    const updateStatements = Object.entries(updates).map(([key, value]) => `${key} = '${value}'`);
+    const sql = `UPDATE frontend_users SET ${updateStatements.join(', ')} WHERE id = ${id}`;
     try {
-      const { id, frontend_id, ...updates } = params;
-      const updateStatements = Object.entries(updates).map(([key, value]) => `${key} = '${value}'`);
-      const sql = `UPDATE frontend_users SET ${updateStatements.join(', ')} WHERE id = ${id}`;
-
       const data = await db(sql)
       resolve(data);
     } catch (error) {
