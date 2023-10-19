@@ -7,8 +7,10 @@ import { imagePath, videoPath } from '../config/index.js';
 import frontendApiRoutes from '../frontend/index.js';
 import { relativePath } from '../utils/index.js';
 import tokenAuth from './tokenAuth.js';
+import { LogHelper } from '../utils/logs.js'  
 
 export function configureApp(app) {
+  LogHelper.Init()
   // app.use(compression()); // 开启gzip压缩
   app.use(cors()); // 配置跨域
   app.use(tokenAuth); // 配置token验证

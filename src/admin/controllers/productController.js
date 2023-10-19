@@ -30,11 +30,11 @@ export const getProductListController = {
       response.data = {
         list: list,
         total: total_rows || null
-      }
+      };
       res.json(response);
     } catch (error) {
-      console.log(error);
-      response.message = '获取失败', response.data = error
+      console.error(error);
+      response.message = '获取失败'; response.data = error;
       res.json(response);
     }
   }
@@ -47,10 +47,11 @@ export const getProductCategoryListController = {
     const response = _.cloneDeep(responseConfig);
     try {
       const data = await productModel.getProductCategoryList()
-      response.message = '获取成功'; response.data = data
+      response.message = '获取成功'; response.data = data;
       res.json(response);
     } catch (error) {
-      response.message = 'error'; response.data = error
+      console.error(error);
+      response.message = 'error'; response.data = error;
       res.json(response);
     }
   }
@@ -66,7 +67,8 @@ export const getProductStatusListController = {
       response.message = '获取成功'; response.data = data
       res.json(response);
     } catch (error) {
-      response.message = 'error', response.data = error
+      console.error(error);
+      response.message = 'error'; response.data = error;
       res.json(response);
     }
   }
@@ -90,7 +92,8 @@ export const createProductController = {
       response.message = '添加商品成功'
       res.json(response);
     } catch (error) {
-      response.message = '添加商品失败', response.data = error
+      console.error(error);
+      response.message = '添加商品失败'; response.data = error;
       res.json(response);
     }
   }
@@ -111,10 +114,11 @@ export const updateProductController = {
     req.body.videoFiles = JSON.stringify(videoFiles)
     try {
       await productModel.updateProduct(req.body)
-      response.message = '修改成功'
+      response.message = '修改成功';
       res.json(response);
     } catch (error) {
-      response.message = '修改失败'; response.data = error
+      console.error(error);
+      response.message = '修改失败'; response.data = error;
       res.json(response);
     }
   }

@@ -14,7 +14,7 @@ const logicStrategies = {
   // 添加其他的判断逻辑...
 };
 
-// 定义商品对象判断策略对象
+// 定义后台登录判断策略对象
 export const adminLoginStrategies = {
   username: {
     logic: ['required'],
@@ -26,7 +26,7 @@ export const adminLoginStrategies = {
   },
 };
 
-// 定义商品对象判断策略对象
+// 定义商品判断策略对象
 export const productStrategies = {
   description: {
     logic: ['required'],

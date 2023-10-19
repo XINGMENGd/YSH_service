@@ -20,6 +20,7 @@ export const loginController = {
       response.message = '登录成功'; response.data = _data
       res.json(response);
     } catch (error) {
+      console.error(error)
       response.message = '用户名或密码不正确'; response.data = error
       res.json(response);
     }
@@ -48,6 +49,7 @@ export const getRoutesController = {
         res.json(response)
       }
     } catch (error) {
+      console.error(error)
       response.message = '服务器内部错误'; response.data = error;
       res.json(response);
     }

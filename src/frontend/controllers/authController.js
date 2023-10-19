@@ -25,7 +25,8 @@ export const sendVerifyCodeController = {
       response.message = '发送成功'
       res.json(response);
     } catch (error) {
-      response.message = '发送失败'; response.data = error
+      console.error(error);
+      response.message = '发送失败'; response.data = error;
       res.json(response);
     }
   }
@@ -51,7 +52,8 @@ export const registerController = {
       response.message = '注册成功'
       res.json(response);
     } catch (error) {
-      response.message = error
+      console.error(error);
+      response.message = error;
       res.json(response);
     }
   }
@@ -75,10 +77,14 @@ export const loginController = {
     }
     req.body.verify_mode = verify_mode
     try {
-      const { password: _password, ..._data } = await authModel.verifyLogin(req.body)
-      response.message = '登录成功'; response.data = _data;
+      const { password: _password, token, ..._data } = await authModel.verifyLogin(req.body)
+      response.message = '登录成功'; response.data = {
+        token,
+        userInfo: _data
+      };
       res.json(response);
     } catch (error) {
+      console.error(error);
       response.message = '用户信息或密码错误'; response.data = error;
       res.json(response);
     }
@@ -117,6 +123,7 @@ export const verifyCodeLoginController = {
         res.json(response);
       }
     } catch (error) {
+      console.error(error);
       response.message = '登录失败'; response.data = error;
       res.json(response);
     }
@@ -145,7 +152,8 @@ export const updateUserInfoController = {
       response.message = '更新成功'
       res.json(response);
     } catch (error) {
-      response.message = error
+      console.error(error);
+      response.message = error;
       res.json(response);
     }
   }

@@ -26,7 +26,8 @@ export const uploadFileController = {
         response.message = '上传成功'; response.data = { img_url: BaseURL + filePath + name }
         res.json(response)
       } catch (error) {
-        response.message = '上传失败'; response.data = error
+        console.error(error);
+        response.message = '上传失败'; response.data = error;
         res.json(response)
       }
     })
@@ -50,7 +51,8 @@ export const removeFilesController = {
       response.message = '删除成功'
       res.json(response)
     } catch (error) {
-      response.message = '文件不存在'; response.data = error
+      console.error(error);
+      response.message = '文件不存在'; response.data = error;
       res.json(response)
     }
   }
@@ -75,7 +77,8 @@ export const uploadChunksController = {
         response.message = '分片上传成功'
         res.json(response)
       } catch (error) {
-        response.message = '分片上传成功'; response.data = error
+        console.error(error);
+        response.message = '分片上传成功'; response.data = error;
         res.json(response)
       }
     })
@@ -112,7 +115,8 @@ export const mergeChunksController = {
       response.message = '文件上传成功'; response.data = { img_url: BaseURL + filePath + name }
       res.json(response)
     } catch (error) {
-      response.message = '文件上传出现问题'; response.data = error
+      console.error(error);
+      response.message = '文件上传出现问题'; response.data = error;
       res.json(response)
     }
   }
