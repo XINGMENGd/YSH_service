@@ -1,7 +1,7 @@
 {
-  "name": "yunshanghui-service",
-  "version": "1.0.0",
-  "description": "",
+  "name": "YSH_service",
+  "private":"true",
+  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
