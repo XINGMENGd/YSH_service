@@ -9,8 +9,8 @@ export const getProductListController = {
   handler: async (req, res) => {
     const response = _.cloneDeep(responseConfig);
     try {
-      const { data, total_rows } = await productModel.getProductList(req.query)
-      const list = data.map(item => {
+      const { data: _data, total_rows } = await productModel.getProductList(req.query)
+      const list = _data.map(item => {
         const { videoFiles, buyer_id, imageFiles, ...product_info } = item
         product_info.created_at = moment(item.created_at).format('YYYY-MM-DD HH:mm:ss')
         product_info.updated_at = product_info.updated_at ? moment(item.updated_at).format('YYYY-MM-DD HH:mm:ss') : ''
@@ -19,12 +19,14 @@ export const getProductListController = {
       })
       response.message = '获取成功';
       response.data = {
-        list: list,
+        list,
         total: total_rows || null
       }
       res.json(response);
     } catch (error) {
-      response.message = '获取失败'; response.data = error
+      console.error(error);
+      response.message = '获取失败';
+      res.set('response-status', 'error')
       res.json(response);
     }
   }

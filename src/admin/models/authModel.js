@@ -11,13 +11,13 @@ export const verifyLogin = (params) => {
     const sql = `SELECT * FROM admin_users WHERE username = ? AND password = ?`;
     try {
       const data = await db(sql, [username, password])
-      if (!data.length) return reject(null)
+      if (!data.length) return reject('该账户不存在')
       const res = await createdTokenPromisified(data[0], '24h');
       data[0].token = res.token;
       data[0].expires_at = res.expires_at;
       resolve(data[0])
     } catch (error) {
-      reject(error)
+      reject('error')
     }
   })
 };

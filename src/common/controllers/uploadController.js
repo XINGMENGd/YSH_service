@@ -12,7 +12,12 @@ export const uploadFileController = {
   handler: async (req, res) => {
     multerConfig.single('file')(req, res, function (err) {
       const response = _.cloneDeep(responseConfig);
-      if (err) return res.json(err)
+      if (err) {
+        console.error(err);
+        response.message = '文件上传出错';
+        res.set('response-status', 'error')
+        return res.json(response)
+      }
       const { name, type: fileType } = req.body
       let filePath = ''
       if (fileType.includes('image')) {
@@ -27,7 +32,8 @@ export const uploadFileController = {
         res.json(response)
       } catch (error) {
         console.error(error);
-        response.message = '上传失败'; response.data = error;
+        response.message = '上传失败';
+        res.set('response-status', 'error')
         res.json(response)
       }
     })
@@ -52,7 +58,8 @@ export const removeFilesController = {
       res.json(response)
     } catch (error) {
       console.error(error);
-      response.message = '文件不存在'; response.data = error;
+      response.message = '文件不存在';
+      res.set('response-status', 'error')
       res.json(response)
     }
   }
@@ -78,7 +85,8 @@ export const uploadChunksController = {
         res.json(response)
       } catch (error) {
         console.error(error);
-        response.message = '分片上传成功'; response.data = error;
+        response.message = '分片上传失败';
+        res.set('response-status', 'error')
         res.json(response)
       }
     })
@@ -103,6 +111,7 @@ export const mergeChunksController = {
     const chunks = fs.readdirSync(chunksPath)
     if (chunks.length !== total || chunks.length === 0) {
       response.message = '上传文件分片异常'
+      res.set('response-status', 'error')
       return res.json(response)
     }
     try {
@@ -116,7 +125,8 @@ export const mergeChunksController = {
       res.json(response)
     } catch (error) {
       console.error(error);
-      response.message = '文件上传出现问题'; response.data = error;
+      response.message = '文件上传出现问题';
+      res.set('response-status', 'error')
       res.json(response)
     }
   }

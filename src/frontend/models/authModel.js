@@ -45,7 +45,7 @@ export const verifyLogin = (params) => {
     `
     try {
       const data = await db(sql)
-      if (!data.length) return reject(null)
+      if (!data.length) return reject('该账户不存在')
       const res = await createdTokenPromisified(data[0], '24h')
       data[0].token = res.token
       data[0].expires_at = res.expires_at

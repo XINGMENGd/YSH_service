@@ -7,7 +7,7 @@ import { imagePath, videoPath } from '../config/index.js';
 import frontendApiRoutes from '../frontend/index.js';
 import { relativePath } from '../utils/index.js';
 import tokenAuth from './tokenAuth.js';
-import { LogHelper } from '../utils/logs.js'  
+import { LogHelper } from '../utils/logs.js'
 
 export function configureApp(app) {
   LogHelper.Init()
@@ -18,7 +18,10 @@ export function configureApp(app) {
   app.use(express.urlencoded({ extended: true })); // 配置解析 URL 编码表单数据
   app.use('/' + imagePath, express.static(relativePath(imagePath))) // 开放地址允许访问本地uploads文件夹
   app.use('/' + videoPath, express.static(relativePath(videoPath))) // 开放地址允许访问本地uploads文件夹
-
+  app.use((req, res, next) => {
+    res.set('Access-Control-Expose-Headers', 'response-status')
+    next()
+  })
   app.use((req, res, next) => {
     const { originalUrl } = req;
     const prefixRegex = /^(\/adminApi|\/frontendApi)(\/.*)$/;

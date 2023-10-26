@@ -10,8 +10,8 @@ export const getProductListController = {
   handler: async (req, res) => {
     const response = _.cloneDeep(responseConfig);
     try {
-      const { data, total_rows } = await productModel.getProductList(req.query)
-      const list = data.map(item => {
+      const { data: _data, total_rows } = await productModel.getProductList(req.query)
+      const list = _data.map(item => {
         item.created_at = moment(item.created_at).format('YYYY-MM-DD HH:mm:ss')
         item.updated_at ? item.updated_at = moment(item.updated_at).format('YYYY-MM-DD HH:mm:ss') : ''
         item.imageFiles = JSON.parse(item.imageFiles).map(file => {
@@ -28,13 +28,14 @@ export const getProductListController = {
       })
       response.message = '获取成功';
       response.data = {
-        list: list,
+        list,
         total: total_rows || null
       };
       res.json(response);
     } catch (error) {
       console.error(error);
-      response.message = '获取失败'; response.data = error;
+      response.message = '获取失败';
+      res.set('response-status', 'error')
       res.json(response);
     }
   }
@@ -46,12 +47,13 @@ export const getProductCategoryListController = {
   handler: async (req, res) => {
     const response = _.cloneDeep(responseConfig);
     try {
-      const data = await productModel.getProductCategoryList()
-      response.message = '获取成功'; response.data = data;
+      const _data = await productModel.getProductCategoryList()
+      response.message = '获取成功'; response.data = _data;
       res.json(response);
     } catch (error) {
       console.error(error);
-      response.message = 'error'; response.data = error;
+      response.message = '获取失败';
+      res.set('response-status', 'error')
       res.json(response);
     }
   }
@@ -63,12 +65,13 @@ export const getProductStatusListController = {
   handler: async (req, res) => {
     const response = _.cloneDeep(responseConfig);
     try {
-      const data = await productModel.getProductStatusList()
-      response.message = '获取成功'; response.data = data
+      const _data = await productModel.getProductStatusList()
+      response.message = '获取成功'; response.data = _data
       res.json(response);
     } catch (error) {
       console.error(error);
-      response.message = 'error'; response.data = error;
+      response.message = '获取失败';
+      res.set('response-status', 'error')
       res.json(response);
     }
   }
@@ -82,7 +85,8 @@ export const createProductController = {
     const { imageFiles, videoFiles } = req.body
     const errorMessage = validate(req.body, productStrategies)
     if (errorMessage) {
-      response.code = 400, response.message = errorMessage
+      response.message = errorMessage
+      res.set('response-status', 'error')
       return res.json(response)
     }
     req.body.imageFiles = JSON.stringify(imageFiles)
@@ -93,7 +97,8 @@ export const createProductController = {
       res.json(response);
     } catch (error) {
       console.error(error);
-      response.message = '添加商品失败'; response.data = error;
+      response.message = '添加商品失败';
+      res.set('response-status', 'error')
       res.json(response);
     }
   }
@@ -107,7 +112,9 @@ export const updateProductController = {
     const { imageFiles, videoFiles } = req.body
     const errorMessage = validate(req.body, productStrategies)
     if (errorMessage) {
-      response.code = 400, response.message = errorMessage
+      console.error(errorMessage);
+      response.message = errorMessage
+      res.set('response-status', 'error')
       return res.json(response)
     }
     req.body.imageFiles = JSON.stringify(imageFiles)
@@ -118,7 +125,8 @@ export const updateProductController = {
       res.json(response);
     } catch (error) {
       console.error(error);
-      response.message = '修改失败'; response.data = error;
+      response.message = '修改失败';
+      res.set('response-status', 'error')
       res.json(response);
     }
   }

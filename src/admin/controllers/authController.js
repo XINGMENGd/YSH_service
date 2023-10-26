@@ -12,7 +12,8 @@ export const loginController = {
     const response = _.cloneDeep(responseConfig);
     const errorMessage = validate(req.body, adminLoginStrategies)
     if (errorMessage) {
-      response.code = 400, response.message = errorMessage
+      response.message = errorMessage
+      res.set('response-status', 'error')
       return res.json(response)
     }
     try {
@@ -20,8 +21,8 @@ export const loginController = {
       response.message = '登录成功'; response.data = _data
       res.json(response);
     } catch (error) {
-      console.error(error)
-      response.message = '用户名或密码不正确'; response.data = error
+      response.message = '用户名或密码不正确';
+      res.set('response-status', 'error')
       res.json(response);
     }
   }
@@ -50,7 +51,8 @@ export const getRoutesController = {
       }
     } catch (error) {
       console.error(error)
-      response.message = '服务器内部错误'; response.data = error;
+      response.message = '服务器内部错误';
+      res.set('response-status', 'error')
       res.json(response);
     }
   }

@@ -14,6 +14,7 @@ export const sendVerifyCodeController = {
     // 检验邮箱格式是否正确
     if (!emailRegex(email)) {
       response.message = '请输入正确的邮箱号'
+      res.set('response-status', 'error')
       return res.json(response);
     }
     try {
@@ -26,7 +27,8 @@ export const sendVerifyCodeController = {
       res.json(response);
     } catch (error) {
       console.error(error);
-      response.message = '发送失败'; response.data = error;
+      response.message = '发送失败';
+      res.set('response-status', 'error')
       res.json(response);
     }
   }
@@ -40,12 +42,14 @@ export const registerController = {
     const { email, verify_code } = req.body
     if (!emailRegex(email)) {
       response.message = '请输入正确的邮箱号'
+      res.set('response-status', 'error')
       return res.json(response);
     }
     try {
       const value = await redisClient.get(email) // 从redis查询验证码是否有效
       if (verify_code !== value) {
         response.message = '验证码错误或已过期'
+        res.set('response-status', 'error')
         return res.json(response);
       }
       await authModel.registerUser(req.body) // 注册新用户
@@ -53,7 +57,8 @@ export const registerController = {
       res.json(response);
     } catch (error) {
       console.error(error);
-      response.message = error;
+      response.message = '注册失败';
+      res.set('response-status', 'error')
       res.json(response);
     }
   }
@@ -67,6 +72,7 @@ export const loginController = {
     const { loginId, password } = req.body
     if (!loginId || !password) {
       response.message = '用户信息或密码不能为空'
+      res.set('response-status', 'error')
       return res.json(response)
     }
     let verify_mode = '' // 判断登录类型  1.邮箱登录 2.用户名登录
@@ -77,15 +83,12 @@ export const loginController = {
     }
     req.body.verify_mode = verify_mode
     try {
-      const { password: _password, token, ..._data } = await authModel.verifyLogin(req.body)
-      response.message = '登录成功'; response.data = {
-        token,
-        userInfo: _data
-      };
+      const { password: _password, ..._data } = await authModel.verifyLogin(req.body)
+      response.message = '登录成功'; response.data = _data
       res.json(response);
     } catch (error) {
-      console.error(error);
-      response.message = '用户信息或密码错误'; response.data = error;
+      response.message = '用户信息或密码错误';
+      res.set('response-status', 'error')
       res.json(response);
     }
   }
@@ -99,9 +102,11 @@ export const verifyCodeLoginController = {
     const { loginId, verify_code } = req.body
     if (!emailRegex(loginId)) {
       response.message = '请输入正确的邮箱号'
+      res.set('response-status', 'error')
       return res.json(response);
     } else if (!verify_code) {
       response.message = '请输入验证码'
+      res.set('response-status', 'error')
       return res.json(response);
     }
     try {
@@ -120,11 +125,13 @@ export const verifyCodeLoginController = {
         res.json(response);
       } else {
         response.message = '验证码错误或已过期'
+        res.set('response-status', 'error')
         res.json(response);
       }
     } catch (error) {
       console.error(error);
-      response.message = '登录失败'; response.data = error;
+      response.message = '登录失败';
+      res.set('response-status', 'error')
       res.json(response);
     }
   }
@@ -139,21 +146,25 @@ export const updateUserInfoController = {
     const user_identifier = req.headers['user-identifier']
     if (!id) {
       response.message = '请携带更新用户标识'
+      res.set('response-status', 'error')
       return res.json(response)
     } else if (!Object.keys(updates).length) {
       response.message = '请携带需更新的用户信息'
+      res.set('response-status', 'error')
       return res.json(response)
     } else if (user_identifier !== id) {
       response.message = '请勿尝试篡改他人信息'
+      res.set('response-status', 'error')
       return res.json(response)
     }
     try {
       await authModel.updateUserInfo(req.body)
-      response.message = '更新成功'
+      response.message = '更新信息成功'
       res.json(response);
     } catch (error) {
       console.error(error);
-      response.message = error;
+      response.message = '更新信息异常';
+      res.set('response-status', 'error')
       res.json(response);
     }
   }
